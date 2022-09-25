@@ -1,3 +1,5 @@
+name: Run tests
+
 on: [ push ]
 
 jobs:
@@ -16,6 +18,9 @@ jobs:
           go-version: ${{ matrix.go-version }}
         env:
           GOPATH: ${{ env.HOME }}
+
+      - name: Print environment
+        run: go env
 
       - name: Test
         run: go test -v -cover ./...
