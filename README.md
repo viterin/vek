@@ -1,5 +1,8 @@
 # vek | SIMD Vector Functions
 
+[![Build Status](https://github.com/viterin/vek/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/viterin/vek/actions/workflows/test.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/viterin/vek.svg)](https://pkg.go.dev/github.com/viterin/vek)
+
 The vek package provides a collection of SIMD accelerated vector functions for Go.
 
 Most modern CPUs have special SIMD instructions (Single Instruction, Multiple Data) to
