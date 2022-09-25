@@ -48,6 +48,7 @@ var cpuFeatures = map[string]bool{
 	"SSE42":            cpu.X86.HasSSE42,            // Streaming SIMD extension 4 and 4.2
 }
 
+// SystemInfo contains information about the current operating environment.
 type SystemInfo struct {
 	CPUArchitecture string
 	CPUFeatures     []string

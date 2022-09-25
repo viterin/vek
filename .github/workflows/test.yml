@@ -1,0 +1,21 @@
+on: [ push ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [ 1.18, 1.19 ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+        env:
+          GOPATH: ${{ env.HOME }}
+
+      - name: Test
+        run: go test -v -cover ./...
