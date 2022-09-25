@@ -53,21 +53,21 @@ void Range_F32_V(float* x, float a, size_t n) {
     Range(x, a, n);
 }
 
-void Gather_F64_V(double* dst, double* x, size_t* idx, size_t n) {
-    Gather(dst, x, idx, n);
-}
-
-void Gather_F32_V(float* dst, float* x, size_t* idx, size_t n) {
-    Gather(dst, x, idx, n);
-}
-
-void Scatter_F64_V(double* dst, double* x, size_t* idx, size_t n) {
-    Scatter(dst, x, idx, n);
-}
-
-void Scatter_F32_V(float* dst, float* x, size_t* idx, size_t n) {
-    Scatter(dst, x, idx, n);
-}
+//void Gather_F64_V(double* dst, double* x, size_t* idx, size_t n) {
+//    Gather(dst, x, idx, n);
+//}
+//
+//void Gather_F32_V(float* dst, float* x, size_t* idx, size_t n) {
+//    Gather(dst, x, idx, n);
+//}
+//
+//void Scatter_F64_V(double* dst, double* x, size_t* idx, size_t n) {
+//    Scatter(dst, x, idx, n);
+//}
+//
+//void Scatter_F32_V(float* dst, float* x, size_t* idx, size_t n) {
+//    Scatter(dst, x, idx, n);
+//}
 
 void FromBool_F64_V(double* x, bool* y, size_t n) {
     Convert(x, y, n);
