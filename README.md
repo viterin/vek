@@ -196,11 +196,9 @@ func main() {
 | vek.MulNumber(x, a)             |               multiply each element by number |
 | vek.Div(x, y)                   |                         element-wise division |
 | vek.DivNumber(x, a)             |                 divide each element by number |
-|                                 |                                               |
 | vek.Abs(x)                      |                               absolute values |
 | vek.Neg(x)                      |                             additive inverses |
 | vek.Inv(x)                      |                       multiplicative inverses |
-|                                 |                                               |
 | **Aggregates**                  |                                               |
 | vek.Sum(x)                      |                               sum of elements |
 | vek.CumSum(x)                   |                                cumulative sum |
@@ -209,7 +207,6 @@ func main() {
 | vek.Mean(x)                     |                                          mean |
 | vek.Median(x)                   |                                        median |
 | vek.Quantile(x, q)              |                    q-th quantile, 0 <= q <= 1 |
-|                                 |                                               |
 | **Distance**                    |                                               |
 | vek.Dot(x, y)                   |                                   dot product |
 | vek.Norm(x)                     |                       euclidean norm (length) |
@@ -217,21 +214,17 @@ func main() {
 | vek.ManhattanNorm(x)            |                        sum of absolute values |
 | vek.ManhattanDistance(x, y)     |                   sum of absolute differences |
 | vek.CosineSimilarity(x, y)      |                             cosine similarity |
-|                                 |                                               |
 | **Matrices**                    |                                               |
 | vek.MatMul(x, y, n)             | multiply m-by-n and n-by-p matrix (row-major) |
 | vek.Mat4Mul(x, y)               |            specialization for 4 by 4 matrices |
-|                                 |                                               |
 | **Special**                     |                                               |
 | vek.Sqrt(x)                     |                   square root of each element |
 | vek.Round(x), Floor(x), Ceil(x) |   round to nearest, lesser or greater integer |
-|                                 |                                               |
 | **Special (32-bit only)**       |                                               |
 | vek32.Sin(x)                    |                          sine of each element |
 | vek32.Cos(x)                    |                        cosine of each element |
 | vek32.Exp(x)                    |                          exponential function |
 | vek32.Log(x), Log2(x), Log10(x) |        natural, base 2 and base 10 logarithms |
-|                                 |                                               |
 | **Comparison**                  |                                               |
 | vek.Min(x)                      |                                 minimum value |
 | vek.ArgMin(x)                   |              first index of the minimum value |
@@ -242,7 +235,6 @@ func main() {
 | vek.Maximum(x, y)               |                   element-wise maximum values |
 | vek.MaximumNumber(x, a)         |            maximum of each element and number |
 | vek.Find(x, a)                  |        first index of number, -1 if not found |
-|                                 |                                               |
 | vek.Lt(x, y)                    |                        element-wise less than |
 | vek.LtNumber(x, a)              |                              less than number |
 | vek.Lte(x, y)                   |               element-wise less than or equal |
@@ -255,28 +247,23 @@ func main() {
 | vek.EqNumber(x, a)              |                               equal to number |
 | vek.Neq(x, y)                   |                     element-wise non-equality |
 | vek.NeqNumber(x, a)             |                           not equal to number |
-|                                 |                                               |
 | **Boolean**                     |                                               |
 | vek.Not(x)                      |                              element-wise not |
 | vek.And(x, y)                   |                              element-wise and |
 | vek.Or(x, y)                    |                               element-wise or |
 | vek.Xor(x, y)                   |                     element-wise exclusive or |
 | vek.Select(x, y)                |          select elements using boolean vector |
-|                                 |                                               |
 | vek.All(x)                      |                            all bools are true |
 | vek.Any(x)                      |                     at least one bool is true |
 | vek.None(x)                     |                    none of the bools are true |
 | vek.Count(x)                    |                          number of true bools |
-|                                 |                                               |
 | **Construction**                |                                               |
 | vek.Zeros(n)                    |                               vector of zeros |
 | vek.Ones(n)                     |                                vector of ones |
 | vek.Repeat(a, n)                |                   vector with number repeated |
 | vek.Range(a, b)                 |      vector from a to b (excl.) in steps of 1 |
-|                                 |                                               |
 | vek.Gather(x, idx)              |              select elements at given indices |
 | vek.Scatter(x, idx, size)       |      create vector with indices set to values |
-|                                 |                                               |
 | vek.FromBool(x), FromInt64, ..  |                       convert slice to floats |
 | vek.ToBool(x), ToInt64, ..      |                  convert floats to other type |
 
