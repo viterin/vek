@@ -1,6 +1,6 @@
 module github.com/viterin/vek
 
-go 1.19
+go 1.18
 
 require (
 	github.com/chewxy/math32 v1.10.1

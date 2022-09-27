@@ -479,6 +479,9 @@ func CosineSimilarity(x, y []float64) float64 {
 // Matrices
 
 func checkDimensions[T constraints.Float](x, y []T, n int) (int, int) {
+	if n < 1 || len(x) == 0 || len(y) == 0 {
+		panic("slices must be non-empty with positive n")
+	}
 	m := len(x) / n
 	p := len(y) / n
 	if m*n < len(x) || n*p < len(y) {
@@ -1206,6 +1209,9 @@ func Count(x []bool) int {
 
 // Zeros returns a new slice of length n filled with zeros.
 func Zeros(n int) []float64 {
+	if n < 0 {
+		panic("n must be positive")
+	}
 	dst := make([]float64, n)
 	return Repeat_Into(dst, 0, n)
 }
@@ -1217,6 +1223,9 @@ func Zeros_Into(dst []float64, n int) []float64 {
 
 // Ones returns a new slice of length n filled with ones.
 func Ones(n int) []float64 {
+	if n < 0 {
+		panic("n must be positive")
+	}
 	dst := make([]float64, n)
 	return Repeat_Into(dst, 1, n)
 }
@@ -1228,12 +1237,18 @@ func Ones_Into(dst []float64, n int) []float64 {
 
 // Repeat returns a new slice of length n filled with the given value.
 func Repeat(a float64, n int) []float64 {
+	if n < 0 {
+		panic("n must be positive")
+	}
 	dst := make([]float64, n)
 	return Repeat_Into(dst, a, n)
 }
 
 // Repeat_Into sets the first n elements in the destination slice to the given value.
 func Repeat_Into(dst []float64, a float64, n int) []float64 {
+	if n < 0 {
+		panic("n must be positive")
+	}
 	if cap(dst) < n {
 		panic("destination slice not large enough to hold result")
 	}
@@ -1289,6 +1304,7 @@ func Scatter(x []float64, idx []int, size int) []float64 {
 // Scatter_Into sets positions idx[i] to x[i] in the destination slice, for all
 // i < len(x) = len(idx). The other elements are not modified.
 func Scatter_Into(dst, x []float64, idx []int) []float64 {
+	checkEqualLength(x, idx)
 	checkOverlap(dst, x)
 	functions.Scatter_Go(dst, x, idx)
 	return dst

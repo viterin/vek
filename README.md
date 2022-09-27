@@ -7,9 +7,10 @@ The vek package provides a collection of SIMD accelerated vector functions for G
 
 Most modern CPUs have special SIMD instructions (Single Instruction, Multiple Data) to
 process data in parallel. They can speed up programs that do a lot of number crunching
-significantly, but there is no direct way to use them from Go. Vek implements a large
-number of common vector operations in optimized assembly and wraps them in a simple Go
-API. It supports most modern x86 CPUs and falls back to a pure Go implementation on unsupported platforms.
+significantly, but there is currently no way to exploit these instructions in a pure Go
+program. Vek implements a large number of common vector operations in SIMD accelerated
+assembly code and wraps them in a simple Go API. Vek supports most modern x86 CPUs and falls
+back to a pure Go implementation on unsupported platforms.
 
 ## Features
 
@@ -29,8 +30,8 @@ go get -u github.com/viterin/vek
 ### Simple Arithmetic Example
 
 Vectors are represented as plain old floating point slices, there are no special data
-types in vek. All operations on float64 vectors are in the `vek` package. It contains
-all basic arithmetic operations you'd expect. To multiply two vectors:
+types in vek. All operations on float64 vectors reside in the `vek` package. It contains
+all the basic arithmetic operations:
 
 ```go
 package main
@@ -41,18 +42,21 @@ import (
 )
 
 func main() {
-	// Multiply a vector by itself element-wise
 	x := []float64{0, 1, 2, 3, 4}
-	y := vek.Mul(x, x)
 
-	fmt.Println(x, y) // [0 1 2 3 4], [0 1 4 9 16]
+	// Multiply a vector by itself element-wise
+	y := vek.Mul(x, x)
+	fmt.Println(x, y) // [0 1 2 3 4] [0 1 4 9 16]
+
+	// Multiply each element by a number
+	y = vek.MulNumber(x, 2)
+	fmt.Println(x, y) // [0 1 2 3 4] [0 2 4 6 8]
 }
 ```
 
 ### Working With 32-Bit Vectors
 
-Use the `vek32` package to work with float32 vectors. The interface is identical to `vek`,
-but with float32 arguments and return type:
+The `vek32` package contains float32 versions of each operation:
 
 ```go
 package main
@@ -63,11 +67,11 @@ import (
 )
 
 func main() {
-	// Add 2 to each element
+	// Add a float32 number to each element
 	x := []float32{0, 1, 2, 3, 4}
 	y := vek32.AddNumber(x, 2)
 
-	fmt.Println(x, y) // [0 1 2 3 4], [2 3 4 5 6]
+	fmt.Println(x, y) // [0 1 2 3 4] [2 3 4 5 6]
 }
 ```
 
@@ -111,7 +115,7 @@ func main() {
 
 ### Creating and Converting Vectors
 
-Vek comes with a number of functions to efficiently construct new vectors and convert between vector types.
+Vek has a number of functions to construct new vectors and convert between vector types efficiently.
 
 ```go
 package main
@@ -145,7 +149,8 @@ func main() {
 
 By default, functions allocate a new array to store the result. Append `_Inplace`
 to a function to do the operation inplace, overriding the data of the first
-argument slice with the result. Append `_Into` to specify a different destination.
+argument slice with the result. Append `_Into` to write the result into a target 
+slice.
 
 ```go
 package main
@@ -162,7 +167,7 @@ func main() {
 	y := make([]float64, len(x))
 	vek.AddNumber_Into(y, x, 2)
 
-	fmt.Println(x, y) // [2 3 4 5 6], [4 5 6 7 8]
+	fmt.Println(x, y) // [2 3 4 5 6] [4 5 6 7 8]
 }
 ```
 
@@ -170,7 +175,8 @@ func main() {
 
 SIMD Acceleration is enabled by default on supported platforms, which is any x86/amd64 CPU with
 the AVX2 and FMA extensions. Use `vek.Info()` to see if hardware acceleration is enabled. Turn
-it off or on with `vek.SetAcceleration()`.
+it off or on with `vek.SetAcceleration()`. *Acceleration is currently disabled by default on
+mac as I have no machine to test it on*.
 
 ```go
 package main
@@ -284,7 +290,7 @@ destination. It should not overlap other argument slices.
 
 **vek.xxx_Into( dst, .. )**
 
-Append `_Into` to the function name to write to an existing slice, e.g.
+Append `_Into` to the function name to write the result into a target slice, e.g.
 `vek.AddNumber_Into(dst, x, 2)`. The destination should have sufficient
 capacity to hold the result, its length can be anything. It should
 not overlap other argument slices. The return value is the destination slice resized
