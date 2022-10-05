@@ -6,10 +6,9 @@
 The vek package provides a collection of SIMD accelerated vector functions for Go.
 
 Most modern CPUs have special SIMD instructions (Single Instruction, Multiple Data) to
-process data in parallel. They can speed up programs that do a lot of number crunching
-significantly, but there is currently no way to exploit these instructions in a pure Go
-program. Vek implements a large number of common vector operations in SIMD accelerated
-assembly code and wraps them in a simple Go API. Vek supports most modern x86 CPUs and falls
+process data in parallel, but there is currently no way to use them in a pure Go program. 
+Vek implements a large number of common vector operations in SIMD accelerated assembly 
+code and wraps them in a simple Go API. Vek supports most modern x86 CPUs and falls 
 back to a pure Go implementation on unsupported platforms.
 
 ## Features
@@ -285,13 +284,13 @@ The `vek32` package contains identical functions for float32 vectors, e.g. `vek3
 **vek.xxx_Inplace( .. )**
 
 Append `_Inplace` to the function name to mutate the argument vector inplace, e.g.
-`vek.AddNumber_Inplace(x, 2)` or `vek.Mul_Inplace(x, y)`. The first argument is the
-destination. It should not overlap other argument slices.
+`vek.Add_Inplace(x, y)`. The first argument is the destination. It should not overlap 
+other argument slices.
 
 **vek.xxx_Into( dst, .. )**
 
 Append `_Into` to the function name to write the result into a target slice, e.g.
-`vek.AddNumber_Into(dst, x, 2)`. The destination should have sufficient
+`vek.Add_Into(dst, x, y)`. The destination should have sufficient
 capacity to hold the result, its length can be anything. It should
 not overlap other argument slices. The return value is the destination slice resized
 to the length of the result.

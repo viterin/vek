@@ -641,5 +641,19 @@ func TestConstruction(t *testing.T) {
 		require.Equal(t, []float64{2, 0, 1}, Scatter(two, []int{2, 0}, 3))
 		require.Equal(t, []float64{3, 4}, Scatter(four, []int{1, 0, 0, 1}, 2))
 		require.Equal(t, []float64{5, 4, 3, 2, 1, 0}, Scatter(five, []int{4, 3, 2, 1, 0}, 6))
+
+		require.Equal(t, empty, FromBool([]bool{}))
+		require.Equal(t, []float64{1}, FromBool([]bool{true}))
+		require.Equal(t, []float64{0, 1}, FromBool([]bool{false, true}))
+		require.Equal(t, []float64{0, 1, 0, 1}, FromBool([]bool{false, true, false, true}))
+		require.Equal(t, []float64{0, 1, 0, 1, 1}, FromBool([]bool{false, true, false, true, true}))
+		require.Panics(t, func() { FromBool_Into(dst, []bool{false, false, false, false, false}) })
+
+		require.Equal(t, empty, FromInt32([]int32{}))
+		require.Equal(t, []float64{5}, FromInt32([]int32{5}))
+		require.Equal(t, []float64{5, -5}, FromInt32([]int32{5, -5}))
+		require.Equal(t, []float64{5, -5, 5, 1}, FromInt32([]int32{5, -5, 5, 1}))
+		require.Equal(t, []float64{5, -5, 5, 1, 0}, FromInt32([]int32{5, -5, 5, 1, 0}))
+		require.Panics(t, func() { FromInt32_Into(dst, []int32{1, 2, 3, 4, 5}) })
 	}
 }

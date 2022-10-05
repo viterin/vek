@@ -6,11 +6,7 @@ import (
 	"sync"
 )
 
-var numCPU int
-
-func init() {
-	numCPU = runtime.NumCPU()
-}
+var numCPU int = runtime.NumCPU()
 
 // matMulParallel runs matrix multiply in parallel by dividing the input rows
 func matMulParallel[T constraints.Float](
@@ -27,11 +23,11 @@ func matMulParallel[T constraints.Float](
 		return
 	}
 
-	rowsPerCpu, rem := m/numCPU, m%numCPU
+	rowsPerCPU, rem := m/numCPU, m%numCPU
 	i := 0
 	var wg sync.WaitGroup
 	for c := 0; c < numCPU && i < m; c++ {
-		numRows := rowsPerCpu
+		numRows := rowsPerCPU
 		if c < rem {
 			numRows += 1
 		}
