@@ -647,6 +647,34 @@ func Ceil_Into(dst, x []float32) []float32 {
 	return dst
 }
 
+// Pow returns the elements in the first slice raised to the power in the second.
+func Pow(x, y []float32) []float32 {
+	x = slices.Clone(x)
+	Pow_Inplace(x, y)
+	return x
+}
+
+// Pow_Inplace raises the elements in the first slice to the power in the second, inplace.
+func Pow_Inplace(x, y []float32) {
+	checkEqualLength(x, y)
+	checkOverlap(x, y)
+	if functions.UseAVX2 {
+		functions.Pow_AVX2_F32(x, y)
+	} else {
+		functions.Pow_Go_F32(x, y)
+	}
+}
+
+// Pow_Into raises the elements in the first slice to the power in the second and stores the
+// result in the destination slice.
+func Pow_Into(dst, x, y []float32) []float32 {
+	dst = checkCapacity(dst, x)
+	checkOverlap(dst, x)
+	copy(dst, x)
+	Pow_Inplace(dst, y)
+	return dst
+}
+
 // Special (32-bit only)
 
 // Sin returns the sine of each element.

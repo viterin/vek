@@ -333,6 +333,16 @@ func TestSpecial(t *testing.T) {
 		dst = Ceil_Into(dst, four)
 		require.InDeltaSlice(t, four, dst, d)
 		require.Panics(t, func() { Ceil_Into(dst, five) })
+
+		require.Panics(t, func() { Pow(one, two) })
+		require.Empty(t, Pow(empty, nil))
+		require.Equal(t, []float64{1}, Pow(one, one))
+		require.InDeltaSlice(t, []float64{11.1803}, Pow([]float64{0.2}, []float64{-1.5}), d)
+		require.Equal(t, []float64{1, 4, 27, 256}, Pow(four, four))
+		require.Equal(t, []float64{1, 4, 27, 256, 3125}, Pow(five, five))
+		dst = Pow_Into(dst, three, three)
+		require.Equal(t, []float64{1, 4, 27}, dst)
+		require.Panics(t, func() { Pow_Into(dst, five, five) })
 	}
 }
 

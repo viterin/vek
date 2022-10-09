@@ -6,7 +6,7 @@ python asm2avo.py --help
     _I: int, _B: bool, _F: float32, _D: float64, _V: void
 - Data segments not supported, add manually & make loads unaligned
 - Last argument is used to pass length of first slice
-- Mostly tested on clang 14 output from godbolt
+- Mostly tested on clang 15 output from godbolt
 """
 import re
 import sys

@@ -81,6 +81,8 @@ func main() {
 	genFloor_F32()
 	genCeil_F64()
 	genCeil_F32()
+	genPow_4x_F64()
+	genPow_8x_F32()
 	genSin_F32()
 	genCos_F32()
 	genSinCos_F32()

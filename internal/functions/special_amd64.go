@@ -2,7 +2,24 @@ package functions
 
 import (
 	"github.com/chewxy/math32"
+	"math"
 )
+
+func Pow_AVX2_F64(x, y []float64) {
+	nSimd := len(x) & (-8)
+	Pow_4x_AVX2_F64(x[:nSimd], y[:nSimd])
+	for i := nSimd; i < len(x); i++ {
+		x[i] = math.Pow(x[i], y[i])
+	}
+}
+
+func Pow_AVX2_F32(x, y []float32) {
+	nSimd := len(x) & (-8)
+	Pow_8x_AVX2_F32(x[:nSimd], y[:nSimd])
+	for i := nSimd; i < len(x); i++ {
+		x[i] = math32.Pow(x[i], y[i])
+	}
+}
 
 func Exp_AVX2_F32(x []float32) {
 	nSimd := (len(x) / 8) * 8

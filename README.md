@@ -227,6 +227,7 @@ func main() {
 | vek.Mat4Mul(x, y)               |            specialization for 4 by 4 matrices |
 | **Special**                     |                                               |
 | vek.Sqrt(x)                     |                   square root of each element |
+| vek.Pow(x, y)                   |                            element-wise power |
 | vek.Round(x), Floor(x), Ceil(x) |   round to nearest, lesser or greater integer |
 | **Special (32-bit only)**       |                                               |
 | vek32.Sin(x)                    |                          sine of each element |
@@ -318,6 +319,8 @@ Times are in nanoseconds. Functions are inplace.
 | **vek32.Round**     |      1,812 |          102 |      250,035 |          9,722 |         25x |
 | **vek.Sqrt**        |      1,900 |          614 |      326,998 |         85,986 |          4x |
 | **vek32.Sqrt**      |      1,704 |          148 |      247,944 |         15,571 |         15x |
+| **vek.Pow**         |     39,833 |        6,137 |    4,155,465 |        776,556 |          5x |
+| **vek32.Pow**       |     30,386 |        2,091 |    4,070,793 |        292,980 |         14x |
 | **vek32.Exp**       |      7,177 |          375 |    1,120,300 |         49,694 |         22x |
 | **vek32.Log**       |      4,663 |          453 |    1,017,240 |         65,042 |         16x |
 | **vek.Max**         |        734 |           62 |       43,412 |          7,568 |          6x |

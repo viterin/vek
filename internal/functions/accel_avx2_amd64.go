@@ -177,6 +177,12 @@ func Ceil_AVX2_F64(x []float64) float64
 func Ceil_AVX2_F32(x []float32) float32
 
 //go:noescape
+func Pow_4x_AVX2_F64(x []float64, y []float64)
+
+//go:noescape
+func Pow_8x_AVX2_F32(x []float32, y []float32)
+
+//go:noescape
 func Sin_AVX2_F32(x []float32)
 
 //go:noescape

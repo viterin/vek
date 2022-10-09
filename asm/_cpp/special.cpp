@@ -1,6 +1,13 @@
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
 #include <x86intrin.h>
+
+#define MAX_VECTOR_SIZE 256
+#include "vectorclass.h"
+#include "vectormath_exp.h"
+
+const size_t vsize_float = 8;
+const size_t vsize_double = 4;
 
 template<typename T>
 void Sqrt(T* __restrict x, size_t n) {
@@ -30,36 +37,85 @@ void Ceil(T* __restrict x, size_t n) {
     }
 }
 
-void Sqrt_F64_D(double* x, size_t n) {
+void Sqrt_F64_V(double* x, size_t n) {
     Sqrt(x, n);
 }
 
-void Sqrt_F32_F(float* x, size_t n) {
+void Sqrt_F32_V(float* x, size_t n) {
     Sqrt(x, n);
 }
 
-void Round_F64_D(double* x, size_t n) {
+void Round_F64_V(double* x, size_t n) {
     Round(x, n);
 }
 
-void Round_F32_F(float* x, size_t n) {
+void Round_F32_V(float* x, size_t n) {
     Round(x, n);
 }
 
-void Floor_F64_D(double* x, size_t n) {
+void Floor_F64_V(double* x, size_t n) {
     Floor(x, n);
 }
 
-void Floor_F32_F(float* x, size_t n) {
+void Floor_F32_V(float* x, size_t n) {
     Floor(x, n);
 }
 
-void Ceil_F64_D(double* x, size_t n) {
+void Ceil_F64_V(double* x, size_t n) {
     Ceil(x, n);
 }
 
-void Ceil_F32_F(float* x, size_t n) {
+void Ceil_F32_V(float* x, size_t n) {
     Ceil(x, n);
+}
+
+// Note: Tail is computed in Go. Using store_partial would generate a memcpy call and
+// operator[] an indirect jump. Neither can be translated to avo.
+
+void Pow_4x_F64_V(double* __restrict x, double* __restrict y, size_t n) {
+    size_t nsimd = n & size_t(-vsize_double);
+
+    Vec4d vx, vy;
+    for (size_t i = 0; i < nsimd; i += vsize_double) {
+        vx.load(x + i);
+        vy.load(y + i);
+        [[clang::always_inline]] vx = pow(vx, vy);
+        vx.store(x + i);
+    }
+}
+
+void Pow_8x_F32_V(float* __restrict x, float* __restrict y, size_t n) {
+    size_t nsimd = n & size_t(-vsize_float);
+
+    Vec8f vx, vy;
+    for (size_t i = 0; i < nsimd; i += vsize_float) {
+        vx.load(x + i);
+        vy.load(y + i);
+        [[clang::always_inline]] vx = pow(vx, vy);
+        vx.store(x + i);
+    }
+}
+
+void PowNumber_4x_F64_V(double* __restrict x, double y, size_t n) {
+    size_t nfull = n & size_t(-vsize_double);
+
+    Vec4d vx, vy(y);
+    for (size_t i = 0; i < nfull; i += vsize_double) {
+        vx.load(x + i);
+        [[clang::always_inline]] vx = pow(vx, vy);
+        vx.store(x + i);
+    }
+}
+
+void PowNumber_8x_F32_V(float* __restrict x, float y, size_t n) {
+    size_t nfull = n & size_t(-vsize_float);
+
+    Vec8f vx, vy(y);
+    for (size_t i = 0; i < nfull; i += vsize_float) {
+        vx.load(x + i);
+        [[clang::always_inline]] vx = pow(vx, vy);
+        vx.store(x + i);
+    }
 }
 
 /*

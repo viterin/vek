@@ -53,6 +53,18 @@ func Ceil_Go_F32(x []float32) {
 	}
 }
 
+func Pow_Go_F64(x, y []float64) {
+	for i := 0; i < len(x); i++ {
+		x[i] = math.Pow(x[i], y[i])
+	}
+}
+
+func Pow_Go_F32(x, y []float32) {
+	for i := 0; i < len(x); i++ {
+		x[i] = math32.Pow(x[i], y[i])
+	}
+}
+
 func Sin_Go_F64(x []float64) {
 	for i := 0; i < len(x); i++ {
 		x[i] = math.Sin(x[i])
