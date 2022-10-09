@@ -3,19 +3,19 @@
 [![Build Status](https://github.com/viterin/vek/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/viterin/vek/actions/workflows/test.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/viterin/vek.svg)](https://pkg.go.dev/github.com/viterin/vek)
 
-The vek package provides a collection of SIMD accelerated vector functions for Go.
+`vek` is a collection of SIMD accelerated vector functions for Go.
 
 Most modern CPUs have special SIMD instructions (Single Instruction, Multiple Data) to
 process data in parallel, but there is currently no way to use them in a pure Go program. 
-Vek implements a large number of common vector operations in SIMD accelerated assembly 
-code and wraps them in a simple Go API. Vek supports most modern x86 CPUs and falls 
+`vek` implements a large number of common vector operations in SIMD accelerated assembly 
+code and wraps them in a simple Go API. `vek` supports most modern x86 CPUs and falls 
 back to a pure Go implementation on unsupported platforms.
 
 ## Features
 
-- Fast, average speedups of 10x for float32 vectors
+- Fast, average speedups of 10x for `float32` vectors
 - Fallback to pure Go on unsupported platforms
-- Support for float64, float32 and bool vectors
+- Support for `float64`, `float32` and `bool` vectors
 - Zero allocation variations of each function
 
 ## Installation
@@ -29,7 +29,7 @@ go get -u github.com/viterin/vek
 ### Simple Arithmetic Example
 
 Vectors are represented as plain old floating point slices, there are no special data
-types in vek. All operations on float64 vectors reside in the `vek` package. It contains
+types in `vek`. All operations on `float64` vectors reside in the `vek` package. It contains
 all the basic arithmetic operations:
 
 ```go
@@ -55,7 +55,7 @@ func main() {
 
 ### Working With 32-Bit Vectors
 
-The `vek32` package contains float32 versions of each operation:
+The `vek32` package contains `float32` versions of each operation:
 
 ```go
 package main
@@ -76,8 +76,9 @@ func main() {
 
 ### Comparisons and Selections
 
-Floating point vectors can be compared to other vectors or numbers, producing bool vectors.
-Boolean vectors can be used to select matching elements, count matches and more:
+Floating point vectors can be compared to other vectors or numbers. The result is a `bool` vector 
+indicating where the comparison holds true. `bool` vectors can be used to select matching elements, 
+count matches and more:
 
 ```go
 package main
@@ -91,12 +92,12 @@ func main() {
 	x := []float64{0, 1, 2, 3, 4, 5}
 	y := []float64{5, 4, 3, 2, 1, 0}
 
-	// Bool vector indicating where x < y (less than)
+	// []bool indicating where x < y (less than)
 	m := vek.Lt(x, y)
 	fmt.Println(m)            // [true true true false false false]
 	fmt.Println(vek.Count(m)) // 3
 
-	// Bool vector indicating where x >= 2 (greater than or equal)
+	// []bool indicating where x >= 2 (greater than or equal)
 	m = vek.GteNumber(x, 2)
 	fmt.Println(m)          // [false false true true true true]
 	fmt.Println(vek.Any(m)) // true
@@ -114,7 +115,7 @@ func main() {
 
 ### Creating and Converting Vectors
 
-Vek has a number of functions to construct new vectors and convert between vector types efficiently.
+`vek` has a number of functions to construct new vectors and convert between vector types efficiently:
 
 ```go
 package main
@@ -280,7 +281,7 @@ func main() {
 
 **vek32.xxx( .. )**
 
-The `vek32` package contains identical functions for float32 vectors, e.g. `vek32.Add(x, y)`.
+The `vek32` package contains identical functions for `float32` vectors, e.g. `vek32.Add(x, y)`.
 
 **vek.xxx_Inplace( .. )**
 

@@ -6,7 +6,7 @@ import (
 )
 
 func Pow_AVX2_F64(x, y []float64) {
-	nSimd := len(x) & (-8)
+	nSimd := len(x) & (-4)
 	Pow_4x_AVX2_F64(x[:nSimd], y[:nSimd])
 	for i := nSimd; i < len(x); i++ {
 		x[i] = math.Pow(x[i], y[i])

@@ -97,10 +97,10 @@ void Pow_8x_F32_V(float* __restrict x, float* __restrict y, size_t n) {
 }
 
 void PowNumber_4x_F64_V(double* __restrict x, double y, size_t n) {
-    size_t nfull = n & size_t(-vsize_double);
+    size_t nsimd = n & size_t(-vsize_double);
 
     Vec4d vx, vy(y);
-    for (size_t i = 0; i < nfull; i += vsize_double) {
+    for (size_t i = 0; i < nsimd; i += vsize_double) {
         vx.load(x + i);
         [[clang::always_inline]] vx = pow(vx, vy);
         vx.store(x + i);
@@ -108,10 +108,10 @@ void PowNumber_4x_F64_V(double* __restrict x, double y, size_t n) {
 }
 
 void PowNumber_8x_F32_V(float* __restrict x, float y, size_t n) {
-    size_t nfull = n & size_t(-vsize_float);
+    size_t nsimd = n & size_t(-vsize_float);
 
     Vec8f vx, vy(y);
-    for (size_t i = 0; i < nfull; i += vsize_float) {
+    for (size_t i = 0; i < nsimd; i += vsize_float) {
         vx.load(x + i);
         [[clang::always_inline]] vx = pow(vx, vy);
         vx.store(x + i);
