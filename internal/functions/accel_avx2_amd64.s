@@ -1066,6 +1066,180 @@ LBB15_8:
 	VZEROUPPER
 	RET
 
+DATA dataModNumberF64<>+0(SB)/8, $0x3ff0000000000000
+DATA dataModNumberF64<>+8(SB)/8, $0x7ff8000020000000
+GLOBL dataModNumberF64<>(SB), RODATA|NOPTR, $16
+
+// func ModNumber_4x_AVX2_F64(x []float64, a float64)
+// Requires: AVX, AVX2, FMA3, SSE2
+TEXT ·ModNumber_4x_AVX2_F64(SB), NOSPLIT, $0-32
+	MOVQ         x_base+0(FP), DI
+	MOVSD        a+24(FP), X0
+	MOVQ         x_len+8(FP), SI
+	ANDQ         $-4, SI
+	JE           LBB22_9
+	VXORPD       X1, X1, X1
+	VUCOMISD     X1, X0
+	JBE          LBB22_4
+	VMOVSD       dataModNumberF64<>+0(SB), X1
+	VDIVSD       X0, X1, X1
+	VBROADCASTSD X1, Y1
+	VBROADCASTSD X0, Y0
+	XORL         AX, AX
+	VXORPD       X2, X2, X2
+
+LBB22_3:
+	VMOVUPD      (DI)(AX*8), Y3
+	VMULPD       Y1, Y3, Y4
+	VROUNDPD     $0x09, Y4, Y4
+	VFNMADD213PD Y3, Y0, Y4
+	VCMPPD       $0x02, Y4, Y0, Y3
+	VCMPPD       $0x01, Y2, Y4, Y5
+	VANDPD       Y0, Y3, Y3
+	VSUBPD       Y3, Y4, Y3
+	VANDPD       Y0, Y5, Y4
+	VADDPD       Y4, Y3, Y3
+	VMOVUPD      Y3, (DI)(AX*8)
+	ADDQ         $0x04, AX
+	CMPQ         AX, SI
+	JB           LBB22_3
+	JMP          LBB22_9
+
+LBB22_4:
+	DECQ SI
+	MOVQ SI, CX
+	SHRQ $0x02, CX
+	INCQ CX
+	MOVL CX, AX
+	ANDL $0x07, AX
+	CMPQ SI, $0x1c
+	JAE  LBB22_10
+	XORL DX, DX
+	JMP  LBB22_6
+
+LBB22_10:
+	ANDQ         $-8, CX
+	XORL         DX, DX
+	VBROADCASTSD dataModNumberF64<>+8(SB), Y0
+
+LBB22_11:
+	VMOVUPD Y0, (DI)(DX*8)
+	VMOVUPD Y0, 32(DI)(DX*8)
+	VMOVUPD Y0, 64(DI)(DX*8)
+	VMOVUPD Y0, 96(DI)(DX*8)
+	VMOVUPD Y0, 128(DI)(DX*8)
+	VMOVUPD Y0, 160(DI)(DX*8)
+	VMOVUPD Y0, 192(DI)(DX*8)
+	VMOVUPD Y0, 224(DI)(DX*8)
+	ADDQ    $0x20, DX
+	ADDQ    $-8, CX
+	JNE     LBB22_11
+
+LBB22_6:
+	TESTQ        AX, AX
+	JE           LBB22_9
+	LEAQ         (DI)(DX*8), CX
+	SHLQ         $0x05, AX
+	XORL         DX, DX
+	VBROADCASTSD dataModNumberF64<>+8(SB), Y0
+
+LBB22_8:
+	VMOVUPD Y0, (CX)(DX*1)
+	ADDQ    $0x20, DX
+	CMPQ    AX, DX
+	JNE     LBB22_8
+
+LBB22_9:
+	VZEROUPPER
+	RET
+
+DATA dataModNumberF32<>+0(SB)/4, $0x3f800000
+DATA dataModNumberF32<>+4(SB)/4, $0x7fc00001
+GLOBL dataModNumberF32<>(SB), RODATA|NOPTR, $8
+
+// func ModNumber_8x_AVX2_F32(x []float32, a float32)
+// Requires: AVX, AVX2, FMA3, SSE
+TEXT ·ModNumber_8x_AVX2_F32(SB), NOSPLIT, $0-28
+	MOVQ         x_base+0(FP), DI
+	MOVSS        a+24(FP), X0
+	MOVQ         x_len+8(FP), SI
+	ANDQ         $-8, SI
+	JE           LBB23_9
+	VXORPS       X1, X1, X1
+	VUCOMISS     X1, X0
+	JBE          LBB23_4
+	VMOVSS       dataModNumberF32<>+0(SB), X1
+	VDIVSS       X0, X1, X1
+	VBROADCASTSS X1, Y1
+	VBROADCASTSS X0, Y0
+	XORL         AX, AX
+	VXORPS       X2, X2, X2
+
+LBB23_3:
+	VMOVUPS      (DI)(AX*4), Y3
+	VMULPS       Y1, Y3, Y4
+	VROUNDPS     $0x09, Y4, Y4
+	VFNMADD213PS Y3, Y0, Y4
+	VCMPPS       $0x02, Y4, Y0, Y3
+	VCMPPS       $0x01, Y2, Y4, Y5
+	VANDPS       Y0, Y3, Y3
+	VSUBPS       Y3, Y4, Y3
+	VANDPS       Y0, Y5, Y4
+	VADDPS       Y4, Y3, Y3
+	VMOVUPS      Y3, (DI)(AX*4)
+	ADDQ         $0x08, AX
+	CMPQ         AX, SI
+	JB           LBB23_3
+	JMP          LBB23_9
+
+LBB23_4:
+	DECQ SI
+	MOVQ SI, CX
+	SHRQ $0x03, CX
+	INCQ CX
+	MOVL CX, AX
+	ANDL $0x07, AX
+	CMPQ SI, $0x38
+	JAE  LBB23_10
+	XORL DX, DX
+	JMP  LBB23_6
+
+LBB23_10:
+	ANDQ         $-8, CX
+	XORL         DX, DX
+	VBROADCASTSS dataModNumberF32<>+4(SB), Y0
+
+LBB23_11:
+	VMOVUPS Y0, (DI)(DX*4)
+	VMOVUPS Y0, 32(DI)(DX*4)
+	VMOVUPS Y0, 64(DI)(DX*4)
+	VMOVUPS Y0, 96(DI)(DX*4)
+	VMOVUPS Y0, 128(DI)(DX*4)
+	VMOVUPS Y0, 160(DI)(DX*4)
+	VMOVUPS Y0, 192(DI)(DX*4)
+	VMOVUPS Y0, 224(DI)(DX*4)
+	ADDQ    $0x40, DX
+	ADDQ    $-8, CX
+	JNE     LBB23_11
+
+LBB23_6:
+	TESTQ        AX, AX
+	JE           LBB23_9
+	LEAQ         (DI)(DX*4), CX
+	SHLQ         $0x05, AX
+	XORL         DX, DX
+	VBROADCASTSS dataModNumberF32<>+4(SB), Y0
+
+LBB23_8:
+	VMOVUPS Y0, (CX)(DX*1)
+	ADDQ    $0x20, DX
+	CMPQ    AX, DX
+	JNE     LBB23_8
+
+LBB23_9:
+	VZEROUPPER
+	RET
+
 DATA dataAbsF64<>+0(SB)/8, $0x7fffffffffffffff
 DATA dataAbsF64<>+8(SB)/8, $0x7fffffffffffffff
 DATA dataAbsF64<>+16(SB)/8, $0x7fffffffffffffff

@@ -1,6 +1,7 @@
-# vek | SIMD Vector Functions
+# vek - SIMD Vector Functions
 
 [![Build Status](https://github.com/viterin/vek/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/viterin/vek/actions/workflows/test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/viterin/vek)](https://goreportcard.com/report/github.com/viterin/vek)
 [![Go Reference](https://pkg.go.dev/badge/github.com/viterin/vek.svg)](https://pkg.go.dev/github.com/viterin/vek)
 
 `vek` is a collection of SIMD accelerated vector functions for Go.
@@ -205,6 +206,8 @@ func main() {
 | vek.MulNumber(x, a)             |               multiply each element by number |
 | vek.Div(x, y)                   |                         element-wise division |
 | vek.DivNumber(x, a)             |                 divide each element by number |
+| vek.Mod(x, y)                   |                          element-wise modulus |
+| vek.ModNumber(x, a)             |            modulus of each element and number |
 | vek.Abs(x)                      |                               absolute values |
 | vek.Neg(x)                      |                             additive inverses |
 | vek.Inv(x)                      |                       multiplicative inverses |

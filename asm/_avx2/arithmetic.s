@@ -31,7 +31,7 @@ Add_F64_V(double*, double*, unsigned long):                      # @Add_F64_V(do
         vmovsd  (%rdi,%rax,8), %xmm0            # xmm0 = mem[0],zero
         vaddsd  (%rsi,%rax,8), %xmm0, %xmm0
         vmovsd  %xmm0, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB0_6
 .LBB0_7:
@@ -70,7 +70,7 @@ Add_F32_V(float*, float*, unsigned long):                      # @Add_F32_V(floa
         vmovss  (%rdi,%rax,4), %xmm0            # xmm0 = mem[0],zero,zero,zero
         vaddss  (%rsi,%rax,4), %xmm0, %xmm0
         vmovss  %xmm0, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB1_6
 .LBB1_7:
@@ -78,25 +78,17 @@ Add_F32_V(float*, float*, unsigned long):                      # @Add_F32_V(floa
         retq
 AddNumber_F64_V(double*, double, unsigned long):                # @AddNumber_F64_V(double*, double, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB2_11
+        je      .LBB2_7
         cmpq    $16, %rsi
         jae     .LBB2_3
         xorl    %eax, %eax
-        jmp     .LBB2_10
+        jmp     .LBB2_6
 .LBB2_3:
         movq    %rsi, %rax
         andq    $-16, %rax
         vbroadcastsd    %xmm0, %ymm1
-        leaq    -16(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $4, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB2_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB2_6:                                # =>This Inner Loop Header: Depth=1
+.LBB2_4:                                # =>This Inner Loop Header: Depth=1
         vaddpd  (%rdi,%rcx,8), %ymm1, %ymm2
         vaddpd  32(%rdi,%rcx,8), %ymm1, %ymm3
         vaddpd  64(%rdi,%rcx,8), %ymm1, %ymm4
@@ -105,66 +97,33 @@ AddNumber_F64_V(double*, double, unsigned long):                # @AddNumber_F64
         vmovupd %ymm3, 32(%rdi,%rcx,8)
         vmovupd %ymm4, 64(%rdi,%rcx,8)
         vmovupd %ymm5, 96(%rdi,%rcx,8)
-        vaddpd  128(%rdi,%rcx,8), %ymm1, %ymm2
-        vaddpd  160(%rdi,%rcx,8), %ymm1, %ymm3
-        vaddpd  192(%rdi,%rcx,8), %ymm1, %ymm4
-        vaddpd  224(%rdi,%rcx,8), %ymm1, %ymm5
-        vmovupd %ymm2, 128(%rdi,%rcx,8)
-        vmovupd %ymm3, 160(%rdi,%rcx,8)
-        vmovupd %ymm4, 192(%rdi,%rcx,8)
-        vmovupd %ymm5, 224(%rdi,%rcx,8)
-        addq    $32, %rcx
-        addq    $-2, %rdx
-        jne     .LBB2_6
-        testb   $1, %r8b
-        je      .LBB2_9
-.LBB2_8:
-        vaddpd  (%rdi,%rcx,8), %ymm1, %ymm2
-        vaddpd  32(%rdi,%rcx,8), %ymm1, %ymm3
-        vaddpd  64(%rdi,%rcx,8), %ymm1, %ymm4
-        vaddpd  96(%rdi,%rcx,8), %ymm1, %ymm1
-        vmovupd %ymm2, (%rdi,%rcx,8)
-        vmovupd %ymm3, 32(%rdi,%rcx,8)
-        vmovupd %ymm4, 64(%rdi,%rcx,8)
-        vmovupd %ymm1, 96(%rdi,%rcx,8)
-.LBB2_9:
+        addq    $16, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB2_4
         cmpq    %rsi, %rax
-        je      .LBB2_11
-.LBB2_10:                               # =>This Inner Loop Header: Depth=1
+        je      .LBB2_7
+.LBB2_6:                                # =>This Inner Loop Header: Depth=1
         vaddsd  (%rdi,%rax,8), %xmm0, %xmm1
         vmovsd  %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB2_10
-.LBB2_11:
+        jne     .LBB2_6
+.LBB2_7:
         vzeroupper
         retq
-.LBB2_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB2_8
-        jmp     .LBB2_9
 AddNumber_F32_V(float*, float, unsigned long):                # @AddNumber_F32_V(float*, float, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB3_11
+        je      .LBB3_7
         cmpq    $32, %rsi
         jae     .LBB3_3
         xorl    %eax, %eax
-        jmp     .LBB3_10
+        jmp     .LBB3_6
 .LBB3_3:
         movq    %rsi, %rax
         andq    $-32, %rax
         vbroadcastss    %xmm0, %ymm1
-        leaq    -32(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $5, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB3_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB3_6:                                # =>This Inner Loop Header: Depth=1
+.LBB3_4:                                # =>This Inner Loop Header: Depth=1
         vaddps  (%rdi,%rcx,4), %ymm1, %ymm2
         vaddps  32(%rdi,%rcx,4), %ymm1, %ymm3
         vaddps  64(%rdi,%rcx,4), %ymm1, %ymm4
@@ -173,45 +132,20 @@ AddNumber_F32_V(float*, float, unsigned long):                # @AddNumber_F32_V
         vmovups %ymm3, 32(%rdi,%rcx,4)
         vmovups %ymm4, 64(%rdi,%rcx,4)
         vmovups %ymm5, 96(%rdi,%rcx,4)
-        vaddps  128(%rdi,%rcx,4), %ymm1, %ymm2
-        vaddps  160(%rdi,%rcx,4), %ymm1, %ymm3
-        vaddps  192(%rdi,%rcx,4), %ymm1, %ymm4
-        vaddps  224(%rdi,%rcx,4), %ymm1, %ymm5
-        vmovups %ymm2, 128(%rdi,%rcx,4)
-        vmovups %ymm3, 160(%rdi,%rcx,4)
-        vmovups %ymm4, 192(%rdi,%rcx,4)
-        vmovups %ymm5, 224(%rdi,%rcx,4)
-        addq    $64, %rcx
-        addq    $-2, %rdx
-        jne     .LBB3_6
-        testb   $1, %r8b
-        je      .LBB3_9
-.LBB3_8:
-        vaddps  (%rdi,%rcx,4), %ymm1, %ymm2
-        vaddps  32(%rdi,%rcx,4), %ymm1, %ymm3
-        vaddps  64(%rdi,%rcx,4), %ymm1, %ymm4
-        vaddps  96(%rdi,%rcx,4), %ymm1, %ymm1
-        vmovups %ymm2, (%rdi,%rcx,4)
-        vmovups %ymm3, 32(%rdi,%rcx,4)
-        vmovups %ymm4, 64(%rdi,%rcx,4)
-        vmovups %ymm1, 96(%rdi,%rcx,4)
-.LBB3_9:
+        addq    $32, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB3_4
         cmpq    %rsi, %rax
-        je      .LBB3_11
-.LBB3_10:                               # =>This Inner Loop Header: Depth=1
+        je      .LBB3_7
+.LBB3_6:                                # =>This Inner Loop Header: Depth=1
         vaddss  (%rdi,%rax,4), %xmm0, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB3_10
-.LBB3_11:
+        jne     .LBB3_6
+.LBB3_7:
         vzeroupper
         retq
-.LBB3_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB3_8
-        jmp     .LBB3_9
 Sub_F64_V(double*, double*, unsigned long):                      # @Sub_F64_V(double*, double*, unsigned long)
         testq   %rdx, %rdx
         je      .LBB4_7
@@ -245,7 +179,7 @@ Sub_F64_V(double*, double*, unsigned long):                      # @Sub_F64_V(do
         vmovsd  (%rdi,%rax,8), %xmm0            # xmm0 = mem[0],zero
         vsubsd  (%rsi,%rax,8), %xmm0, %xmm0
         vmovsd  %xmm0, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB4_6
 .LBB4_7:
@@ -284,7 +218,7 @@ Sub_F32_V(float*, float*, unsigned long):                      # @Sub_F32_V(floa
         vmovss  (%rdi,%rax,4), %xmm0            # xmm0 = mem[0],zero,zero,zero
         vsubss  (%rsi,%rax,4), %xmm0, %xmm0
         vmovss  %xmm0, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB5_6
 .LBB5_7:
@@ -292,25 +226,17 @@ Sub_F32_V(float*, float*, unsigned long):                      # @Sub_F32_V(floa
         retq
 SubNumber_F64_V(double*, double, unsigned long):                # @SubNumber_F64_V(double*, double, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB6_11
+        je      .LBB6_7
         cmpq    $16, %rsi
         jae     .LBB6_3
         xorl    %eax, %eax
-        jmp     .LBB6_10
+        jmp     .LBB6_6
 .LBB6_3:
         movq    %rsi, %rax
         andq    $-16, %rax
         vbroadcastsd    %xmm0, %ymm1
-        leaq    -16(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $4, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB6_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB6_6:                                # =>This Inner Loop Header: Depth=1
+.LBB6_4:                                # =>This Inner Loop Header: Depth=1
         vmovupd (%rdi,%rcx,8), %ymm2
         vmovupd 32(%rdi,%rcx,8), %ymm3
         vmovupd 64(%rdi,%rcx,8), %ymm4
@@ -323,75 +249,34 @@ SubNumber_F64_V(double*, double, unsigned long):                # @SubNumber_F64
         vmovupd %ymm3, 32(%rdi,%rcx,8)
         vmovupd %ymm4, 64(%rdi,%rcx,8)
         vmovupd %ymm5, 96(%rdi,%rcx,8)
-        vmovupd 128(%rdi,%rcx,8), %ymm2
-        vmovupd 160(%rdi,%rcx,8), %ymm3
-        vmovupd 192(%rdi,%rcx,8), %ymm4
-        vmovupd 224(%rdi,%rcx,8), %ymm5
-        vsubpd  %ymm1, %ymm2, %ymm2
-        vsubpd  %ymm1, %ymm3, %ymm3
-        vsubpd  %ymm1, %ymm4, %ymm4
-        vsubpd  %ymm1, %ymm5, %ymm5
-        vmovupd %ymm2, 128(%rdi,%rcx,8)
-        vmovupd %ymm3, 160(%rdi,%rcx,8)
-        vmovupd %ymm4, 192(%rdi,%rcx,8)
-        vmovupd %ymm5, 224(%rdi,%rcx,8)
-        addq    $32, %rcx
-        addq    $-2, %rdx
-        jne     .LBB6_6
-        testb   $1, %r8b
-        je      .LBB6_9
-.LBB6_8:
-        vmovupd (%rdi,%rcx,8), %ymm2
-        vmovupd 32(%rdi,%rcx,8), %ymm3
-        vmovupd 64(%rdi,%rcx,8), %ymm4
-        vmovupd 96(%rdi,%rcx,8), %ymm5
-        vsubpd  %ymm1, %ymm2, %ymm2
-        vsubpd  %ymm1, %ymm3, %ymm3
-        vsubpd  %ymm1, %ymm4, %ymm4
-        vsubpd  %ymm1, %ymm5, %ymm1
-        vmovupd %ymm2, (%rdi,%rcx,8)
-        vmovupd %ymm3, 32(%rdi,%rcx,8)
-        vmovupd %ymm4, 64(%rdi,%rcx,8)
-        vmovupd %ymm1, 96(%rdi,%rcx,8)
-.LBB6_9:
+        addq    $16, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB6_4
         cmpq    %rsi, %rax
-        je      .LBB6_11
-.LBB6_10:                               # =>This Inner Loop Header: Depth=1
+        je      .LBB6_7
+.LBB6_6:                                # =>This Inner Loop Header: Depth=1
         vmovsd  (%rdi,%rax,8), %xmm1            # xmm1 = mem[0],zero
         vsubsd  %xmm0, %xmm1, %xmm1
         vmovsd  %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB6_10
-.LBB6_11:
+        jne     .LBB6_6
+.LBB6_7:
         vzeroupper
         retq
-.LBB6_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB6_8
-        jmp     .LBB6_9
 SubNumber_F32_V(float*, float, unsigned long):                # @SubNumber_F32_V(float*, float, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB7_11
+        je      .LBB7_7
         cmpq    $32, %rsi
         jae     .LBB7_3
         xorl    %eax, %eax
-        jmp     .LBB7_10
+        jmp     .LBB7_6
 .LBB7_3:
         movq    %rsi, %rax
         andq    $-32, %rax
         vbroadcastss    %xmm0, %ymm1
-        leaq    -32(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $5, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB7_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB7_6:                                # =>This Inner Loop Header: Depth=1
+.LBB7_4:                                # =>This Inner Loop Header: Depth=1
         vmovups (%rdi,%rcx,4), %ymm2
         vmovups 32(%rdi,%rcx,4), %ymm3
         vmovups 64(%rdi,%rcx,4), %ymm4
@@ -404,54 +289,21 @@ SubNumber_F32_V(float*, float, unsigned long):                # @SubNumber_F32_V
         vmovups %ymm3, 32(%rdi,%rcx,4)
         vmovups %ymm4, 64(%rdi,%rcx,4)
         vmovups %ymm5, 96(%rdi,%rcx,4)
-        vmovups 128(%rdi,%rcx,4), %ymm2
-        vmovups 160(%rdi,%rcx,4), %ymm3
-        vmovups 192(%rdi,%rcx,4), %ymm4
-        vmovups 224(%rdi,%rcx,4), %ymm5
-        vsubps  %ymm1, %ymm2, %ymm2
-        vsubps  %ymm1, %ymm3, %ymm3
-        vsubps  %ymm1, %ymm4, %ymm4
-        vsubps  %ymm1, %ymm5, %ymm5
-        vmovups %ymm2, 128(%rdi,%rcx,4)
-        vmovups %ymm3, 160(%rdi,%rcx,4)
-        vmovups %ymm4, 192(%rdi,%rcx,4)
-        vmovups %ymm5, 224(%rdi,%rcx,4)
-        addq    $64, %rcx
-        addq    $-2, %rdx
-        jne     .LBB7_6
-        testb   $1, %r8b
-        je      .LBB7_9
-.LBB7_8:
-        vmovups (%rdi,%rcx,4), %ymm2
-        vmovups 32(%rdi,%rcx,4), %ymm3
-        vmovups 64(%rdi,%rcx,4), %ymm4
-        vmovups 96(%rdi,%rcx,4), %ymm5
-        vsubps  %ymm1, %ymm2, %ymm2
-        vsubps  %ymm1, %ymm3, %ymm3
-        vsubps  %ymm1, %ymm4, %ymm4
-        vsubps  %ymm1, %ymm5, %ymm1
-        vmovups %ymm2, (%rdi,%rcx,4)
-        vmovups %ymm3, 32(%rdi,%rcx,4)
-        vmovups %ymm4, 64(%rdi,%rcx,4)
-        vmovups %ymm1, 96(%rdi,%rcx,4)
-.LBB7_9:
+        addq    $32, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB7_4
         cmpq    %rsi, %rax
-        je      .LBB7_11
-.LBB7_10:                               # =>This Inner Loop Header: Depth=1
+        je      .LBB7_7
+.LBB7_6:                                # =>This Inner Loop Header: Depth=1
         vmovss  (%rdi,%rax,4), %xmm1            # xmm1 = mem[0],zero,zero,zero
         vsubss  %xmm0, %xmm1, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB7_10
-.LBB7_11:
+        jne     .LBB7_6
+.LBB7_7:
         vzeroupper
         retq
-.LBB7_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB7_8
-        jmp     .LBB7_9
 Mul_F64_V(double*, double*, unsigned long):                      # @Mul_F64_V(double*, double*, unsigned long)
         testq   %rdx, %rdx
         je      .LBB8_7
@@ -485,7 +337,7 @@ Mul_F64_V(double*, double*, unsigned long):                      # @Mul_F64_V(do
         vmovsd  (%rdi,%rax,8), %xmm0            # xmm0 = mem[0],zero
         vmulsd  (%rsi,%rax,8), %xmm0, %xmm0
         vmovsd  %xmm0, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB8_6
 .LBB8_7:
@@ -524,7 +376,7 @@ Mul_F32_V(float*, float*, unsigned long):                      # @Mul_F32_V(floa
         vmovss  (%rdi,%rax,4), %xmm0            # xmm0 = mem[0],zero,zero,zero
         vmulss  (%rsi,%rax,4), %xmm0, %xmm0
         vmovss  %xmm0, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB9_6
 .LBB9_7:
@@ -532,25 +384,17 @@ Mul_F32_V(float*, float*, unsigned long):                      # @Mul_F32_V(floa
         retq
 MulNumber_F64_V(double*, double, unsigned long):                # @MulNumber_F64_V(double*, double, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB10_11
+        je      .LBB10_7
         cmpq    $16, %rsi
         jae     .LBB10_3
         xorl    %eax, %eax
-        jmp     .LBB10_10
+        jmp     .LBB10_6
 .LBB10_3:
         movq    %rsi, %rax
         andq    $-16, %rax
         vbroadcastsd    %xmm0, %ymm1
-        leaq    -16(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $4, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB10_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB10_6:                               # =>This Inner Loop Header: Depth=1
+.LBB10_4:                               # =>This Inner Loop Header: Depth=1
         vmulpd  (%rdi,%rcx,8), %ymm1, %ymm2
         vmulpd  32(%rdi,%rcx,8), %ymm1, %ymm3
         vmulpd  64(%rdi,%rcx,8), %ymm1, %ymm4
@@ -559,66 +403,33 @@ MulNumber_F64_V(double*, double, unsigned long):                # @MulNumber_F64
         vmovupd %ymm3, 32(%rdi,%rcx,8)
         vmovupd %ymm4, 64(%rdi,%rcx,8)
         vmovupd %ymm5, 96(%rdi,%rcx,8)
-        vmulpd  128(%rdi,%rcx,8), %ymm1, %ymm2
-        vmulpd  160(%rdi,%rcx,8), %ymm1, %ymm3
-        vmulpd  192(%rdi,%rcx,8), %ymm1, %ymm4
-        vmulpd  224(%rdi,%rcx,8), %ymm1, %ymm5
-        vmovupd %ymm2, 128(%rdi,%rcx,8)
-        vmovupd %ymm3, 160(%rdi,%rcx,8)
-        vmovupd %ymm4, 192(%rdi,%rcx,8)
-        vmovupd %ymm5, 224(%rdi,%rcx,8)
-        addq    $32, %rcx
-        addq    $-2, %rdx
-        jne     .LBB10_6
-        testb   $1, %r8b
-        je      .LBB10_9
-.LBB10_8:
-        vmulpd  (%rdi,%rcx,8), %ymm1, %ymm2
-        vmulpd  32(%rdi,%rcx,8), %ymm1, %ymm3
-        vmulpd  64(%rdi,%rcx,8), %ymm1, %ymm4
-        vmulpd  96(%rdi,%rcx,8), %ymm1, %ymm1
-        vmovupd %ymm2, (%rdi,%rcx,8)
-        vmovupd %ymm3, 32(%rdi,%rcx,8)
-        vmovupd %ymm4, 64(%rdi,%rcx,8)
-        vmovupd %ymm1, 96(%rdi,%rcx,8)
-.LBB10_9:
+        addq    $16, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB10_4
         cmpq    %rsi, %rax
-        je      .LBB10_11
-.LBB10_10:                              # =>This Inner Loop Header: Depth=1
+        je      .LBB10_7
+.LBB10_6:                               # =>This Inner Loop Header: Depth=1
         vmulsd  (%rdi,%rax,8), %xmm0, %xmm1
         vmovsd  %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB10_10
-.LBB10_11:
+        jne     .LBB10_6
+.LBB10_7:
         vzeroupper
         retq
-.LBB10_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB10_8
-        jmp     .LBB10_9
 MulNumber_F32_V(float*, float, unsigned long):                # @MulNumber_F32_V(float*, float, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB11_11
+        je      .LBB11_7
         cmpq    $32, %rsi
         jae     .LBB11_3
         xorl    %eax, %eax
-        jmp     .LBB11_10
+        jmp     .LBB11_6
 .LBB11_3:
         movq    %rsi, %rax
         andq    $-32, %rax
         vbroadcastss    %xmm0, %ymm1
-        leaq    -32(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $5, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB11_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
-.LBB11_6:                               # =>This Inner Loop Header: Depth=1
+.LBB11_4:                               # =>This Inner Loop Header: Depth=1
         vmulps  (%rdi,%rcx,4), %ymm1, %ymm2
         vmulps  32(%rdi,%rcx,4), %ymm1, %ymm3
         vmulps  64(%rdi,%rcx,4), %ymm1, %ymm4
@@ -627,45 +438,20 @@ MulNumber_F32_V(float*, float, unsigned long):                # @MulNumber_F32_V
         vmovups %ymm3, 32(%rdi,%rcx,4)
         vmovups %ymm4, 64(%rdi,%rcx,4)
         vmovups %ymm5, 96(%rdi,%rcx,4)
-        vmulps  128(%rdi,%rcx,4), %ymm1, %ymm2
-        vmulps  160(%rdi,%rcx,4), %ymm1, %ymm3
-        vmulps  192(%rdi,%rcx,4), %ymm1, %ymm4
-        vmulps  224(%rdi,%rcx,4), %ymm1, %ymm5
-        vmovups %ymm2, 128(%rdi,%rcx,4)
-        vmovups %ymm3, 160(%rdi,%rcx,4)
-        vmovups %ymm4, 192(%rdi,%rcx,4)
-        vmovups %ymm5, 224(%rdi,%rcx,4)
-        addq    $64, %rcx
-        addq    $-2, %rdx
-        jne     .LBB11_6
-        testb   $1, %r8b
-        je      .LBB11_9
-.LBB11_8:
-        vmulps  (%rdi,%rcx,4), %ymm1, %ymm2
-        vmulps  32(%rdi,%rcx,4), %ymm1, %ymm3
-        vmulps  64(%rdi,%rcx,4), %ymm1, %ymm4
-        vmulps  96(%rdi,%rcx,4), %ymm1, %ymm1
-        vmovups %ymm2, (%rdi,%rcx,4)
-        vmovups %ymm3, 32(%rdi,%rcx,4)
-        vmovups %ymm4, 64(%rdi,%rcx,4)
-        vmovups %ymm1, 96(%rdi,%rcx,4)
-.LBB11_9:
+        addq    $32, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB11_4
         cmpq    %rsi, %rax
-        je      .LBB11_11
-.LBB11_10:                              # =>This Inner Loop Header: Depth=1
+        je      .LBB11_7
+.LBB11_6:                               # =>This Inner Loop Header: Depth=1
         vmulss  (%rdi,%rax,4), %xmm0, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB11_10
-.LBB11_11:
+        jne     .LBB11_6
+.LBB11_7:
         vzeroupper
         retq
-.LBB11_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB11_8
-        jmp     .LBB11_9
 Div_F64_V(double*, double*, unsigned long):                      # @Div_F64_V(double*, double*, unsigned long)
         testq   %rdx, %rdx
         je      .LBB12_11
@@ -679,7 +465,7 @@ Div_F64_V(double*, double*, unsigned long):                      # @Div_F64_V(do
         leaq    -4(%rax), %rcx
         movq    %rcx, %r8
         shrq    $2, %r8
-        addq    $1, %r8
+        incq    %r8
         testq   %rcx, %rcx
         je      .LBB12_4
         movq    %r8, %r9
@@ -708,7 +494,7 @@ Div_F64_V(double*, double*, unsigned long):                      # @Div_F64_V(do
         vmovsd  (%rdi,%rax,8), %xmm0            # xmm0 = mem[0],zero
         vdivsd  (%rsi,%rax,8), %xmm0, %xmm0
         vmovsd  %xmm0, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB12_10
 .LBB12_11:
@@ -768,7 +554,7 @@ Div_F32_V(float*, float*, unsigned long):                      # @Div_F32_V(floa
         vmovss  (%rdi,%rax,4), %xmm0            # xmm0 = mem[0],zero,zero,zero
         vdivss  (%rsi,%rax,4), %xmm0, %xmm0
         vmovss  %xmm0, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rdx
         jne     .LBB13_6
 .LBB13_7:
@@ -790,7 +576,7 @@ DivNumber_F64_V(double*, double, unsigned long):                # @DivNumber_F64
         leaq    -4(%rax), %rcx
         movq    %rcx, %r8
         shrq    $2, %r8
-        addq    $1, %r8
+        incq    %r8
         testq   %rcx, %rcx
         je      .LBB14_4
         movq    %r8, %rcx
@@ -821,7 +607,7 @@ DivNumber_F64_V(double*, double, unsigned long):                # @DivNumber_F64
 .LBB14_11:                              # =>This Inner Loop Header: Depth=1
         vmulsd  (%rdi,%rax,8), %xmm0, %xmm1
         vmovsd  %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB14_11
 .LBB14_12:
@@ -868,7 +654,7 @@ DivNumber_F32_V(float*, float, unsigned long):                # @DivNumber_F32_V
 .LBB15_7:                               # =>This Inner Loop Header: Depth=1
         vmulss  (%rdi,%rax,4), %xmm0, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB15_7
 .LBB15_8:
@@ -911,7 +697,7 @@ Abs_F64_V(double*, unsigned long):                        # @Abs_F64_V(double*, 
         vmovsd  (%rdi,%rax,8), %xmm1            # xmm1 = mem[0],zero
         vandps  %xmm0, %xmm1, %xmm1
         vmovlps %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB16_7
 .LBB16_8:
@@ -951,7 +737,7 @@ Abs_F32_V(float*, unsigned long):                        # @Abs_F32_V(float*, un
         vmovss  (%rdi,%rax,4), %xmm1            # xmm1 = mem[0],zero,zero,zero
         vandps  %xmm0, %xmm1, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB17_7
 .LBB17_8:
@@ -964,25 +750,17 @@ Abs_F32_V(float*, unsigned long):                        # @Abs_F32_V(float*, un
         .quad   0x8000000000000000              # double -0
 Neg_F64_V(double*, unsigned long):                        # @Neg_F64_V(double*, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB18_12
+        je      .LBB18_8
         cmpq    $16, %rsi
         jae     .LBB18_3
         xorl    %eax, %eax
-        jmp     .LBB18_10
+        jmp     .LBB18_6
 .LBB18_3:
         movq    %rsi, %rax
         andq    $-16, %rax
-        leaq    -16(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $4, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB18_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
         vbroadcastsd    .LCPI18_0(%rip), %ymm0  # ymm0 = [-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0]
-.LBB18_6:                               # =>This Inner Loop Header: Depth=1
+.LBB18_4:                               # =>This Inner Loop Header: Depth=1
         vxorps  (%rdi,%rcx,8), %ymm0, %ymm1
         vxorps  32(%rdi,%rcx,8), %ymm0, %ymm2
         vxorps  64(%rdi,%rcx,8), %ymm0, %ymm3
@@ -991,72 +769,38 @@ Neg_F64_V(double*, unsigned long):                        # @Neg_F64_V(double*, 
         vmovups %ymm2, 32(%rdi,%rcx,8)
         vmovups %ymm3, 64(%rdi,%rcx,8)
         vmovups %ymm4, 96(%rdi,%rcx,8)
-        vxorps  128(%rdi,%rcx,8), %ymm0, %ymm1
-        vxorps  160(%rdi,%rcx,8), %ymm0, %ymm2
-        vxorps  192(%rdi,%rcx,8), %ymm0, %ymm3
-        vxorps  224(%rdi,%rcx,8), %ymm0, %ymm4
-        vmovups %ymm1, 128(%rdi,%rcx,8)
-        vmovups %ymm2, 160(%rdi,%rcx,8)
-        vmovups %ymm3, 192(%rdi,%rcx,8)
-        vmovups %ymm4, 224(%rdi,%rcx,8)
-        addq    $32, %rcx
-        addq    $-2, %rdx
-        jne     .LBB18_6
-        testb   $1, %r8b
-        je      .LBB18_9
-.LBB18_8:
-        vbroadcastsd    .LCPI18_0(%rip), %ymm0  # ymm0 = [-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0]
-        vxorps  (%rdi,%rcx,8), %ymm0, %ymm1
-        vxorps  32(%rdi,%rcx,8), %ymm0, %ymm2
-        vxorps  64(%rdi,%rcx,8), %ymm0, %ymm3
-        vxorps  96(%rdi,%rcx,8), %ymm0, %ymm0
-        vmovups %ymm1, (%rdi,%rcx,8)
-        vmovups %ymm2, 32(%rdi,%rcx,8)
-        vmovups %ymm3, 64(%rdi,%rcx,8)
-        vmovups %ymm0, 96(%rdi,%rcx,8)
-.LBB18_9:
+        addq    $16, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB18_4
         cmpq    %rsi, %rax
-        je      .LBB18_12
-.LBB18_10:
+        je      .LBB18_8
+.LBB18_6:
         vmovaps .LCPI18_1(%rip), %xmm0          # xmm0 = [-0.0E+0,-0.0E+0]
-.LBB18_11:                              # =>This Inner Loop Header: Depth=1
+.LBB18_7:                               # =>This Inner Loop Header: Depth=1
         vmovsd  (%rdi,%rax,8), %xmm1            # xmm1 = mem[0],zero
         vxorps  %xmm0, %xmm1, %xmm1
         vmovlps %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB18_11
-.LBB18_12:
+        jne     .LBB18_7
+.LBB18_8:
         vzeroupper
         retq
-.LBB18_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB18_8
-        jmp     .LBB18_9
 .LCPI19_0:
         .long   0x80000000                      # float -0
 Neg_F32_V(float*, unsigned long):                        # @Neg_F32_V(float*, unsigned long)
         testq   %rsi, %rsi
-        je      .LBB19_12
+        je      .LBB19_8
         cmpq    $32, %rsi
         jae     .LBB19_3
         xorl    %eax, %eax
-        jmp     .LBB19_10
+        jmp     .LBB19_6
 .LBB19_3:
         movq    %rsi, %rax
         andq    $-32, %rax
-        leaq    -32(%rax), %rcx
-        movq    %rcx, %r8
-        shrq    $5, %r8
-        addq    $1, %r8
-        testq   %rcx, %rcx
-        je      .LBB19_4
-        movq    %r8, %rdx
-        andq    $-2, %rdx
         xorl    %ecx, %ecx
         vbroadcastss    .LCPI19_0(%rip), %ymm0  # ymm0 = [-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0]
-.LBB19_6:                               # =>This Inner Loop Header: Depth=1
+.LBB19_4:                               # =>This Inner Loop Header: Depth=1
         vxorps  (%rdi,%rcx,4), %ymm0, %ymm1
         vxorps  32(%rdi,%rcx,4), %ymm0, %ymm2
         vxorps  64(%rdi,%rcx,4), %ymm0, %ymm3
@@ -1065,49 +809,23 @@ Neg_F32_V(float*, unsigned long):                        # @Neg_F32_V(float*, un
         vmovups %ymm2, 32(%rdi,%rcx,4)
         vmovups %ymm3, 64(%rdi,%rcx,4)
         vmovups %ymm4, 96(%rdi,%rcx,4)
-        vxorps  128(%rdi,%rcx,4), %ymm0, %ymm1
-        vxorps  160(%rdi,%rcx,4), %ymm0, %ymm2
-        vxorps  192(%rdi,%rcx,4), %ymm0, %ymm3
-        vxorps  224(%rdi,%rcx,4), %ymm0, %ymm4
-        vmovups %ymm1, 128(%rdi,%rcx,4)
-        vmovups %ymm2, 160(%rdi,%rcx,4)
-        vmovups %ymm3, 192(%rdi,%rcx,4)
-        vmovups %ymm4, 224(%rdi,%rcx,4)
-        addq    $64, %rcx
-        addq    $-2, %rdx
-        jne     .LBB19_6
-        testb   $1, %r8b
-        je      .LBB19_9
-.LBB19_8:
-        vbroadcastss    .LCPI19_0(%rip), %ymm0  # ymm0 = [-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0]
-        vxorps  (%rdi,%rcx,4), %ymm0, %ymm1
-        vxorps  32(%rdi,%rcx,4), %ymm0, %ymm2
-        vxorps  64(%rdi,%rcx,4), %ymm0, %ymm3
-        vxorps  96(%rdi,%rcx,4), %ymm0, %ymm0
-        vmovups %ymm1, (%rdi,%rcx,4)
-        vmovups %ymm2, 32(%rdi,%rcx,4)
-        vmovups %ymm3, 64(%rdi,%rcx,4)
-        vmovups %ymm0, 96(%rdi,%rcx,4)
-.LBB19_9:
+        addq    $32, %rcx
+        cmpq    %rcx, %rax
+        jne     .LBB19_4
         cmpq    %rsi, %rax
-        je      .LBB19_12
-.LBB19_10:
+        je      .LBB19_8
+.LBB19_6:
         vbroadcastss    .LCPI19_0(%rip), %xmm0  # xmm0 = [-0.0E+0,-0.0E+0,-0.0E+0,-0.0E+0]
-.LBB19_11:                              # =>This Inner Loop Header: Depth=1
+.LBB19_7:                               # =>This Inner Loop Header: Depth=1
         vmovss  (%rdi,%rax,4), %xmm1            # xmm1 = mem[0],zero,zero,zero
         vxorps  %xmm0, %xmm1, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
-        jne     .LBB19_11
-.LBB19_12:
+        jne     .LBB19_7
+.LBB19_8:
         vzeroupper
         retq
-.LBB19_4:
-        xorl    %ecx, %ecx
-        testb   $1, %r8b
-        jne     .LBB19_8
-        jmp     .LBB19_9
 .LCPI20_0:
         .quad   0x3ff0000000000000              # double 1
 Inv_F64_V(double*, unsigned long):                        # @Inv_F64_V(double*, unsigned long)
@@ -1123,7 +841,7 @@ Inv_F64_V(double*, unsigned long):                        # @Inv_F64_V(double*, 
         leaq    -4(%rax), %rcx
         movq    %rcx, %r8
         shrq    $2, %r8
-        addq    $1, %r8
+        incq    %r8
         testq   %rcx, %rcx
         je      .LBB20_4
         movq    %r8, %rcx
@@ -1152,7 +870,7 @@ Inv_F64_V(double*, unsigned long):                        # @Inv_F64_V(double*, 
 .LBB20_11:                              # =>This Inner Loop Header: Depth=1
         vdivsd  (%rdi,%rax,8), %xmm0, %xmm1
         vmovsd  %xmm1, (%rdi,%rax,8)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB20_11
 .LBB20_12:
@@ -1208,9 +926,157 @@ Inv_F32_V(float*, unsigned long):                        # @Inv_F32_V(float*, un
 .LBB21_7:                               # =>This Inner Loop Header: Depth=1
         vdivss  (%rdi,%rax,4), %xmm0, %xmm1
         vmovss  %xmm1, (%rdi,%rax,4)
-        addq    $1, %rax
+        incq    %rax
         cmpq    %rax, %rsi
         jne     .LBB21_7
 .LBB21_8:
+        vzeroupper
+        retq
+.LCPI22_0:
+        .quad   0x3ff0000000000000              # double 1
+.LCPI22_1:
+        .quad   0x7ff8000020000000              # double NaN
+ModNumber_4x_F64_V(double*, double, unsigned long):             # @ModNumber_4x_F64_V(double*, double, unsigned long)
+        andq    $-4, %rsi
+        je      .LBB22_9
+        vxorpd  %xmm1, %xmm1, %xmm1
+        vucomisd        %xmm1, %xmm0
+        jbe     .LBB22_4
+        vmovsd  .LCPI22_0(%rip), %xmm1          # xmm1 = mem[0],zero
+        vdivsd  %xmm0, %xmm1, %xmm1
+        vbroadcastsd    %xmm1, %ymm1
+        vbroadcastsd    %xmm0, %ymm0
+        xorl    %eax, %eax
+        vxorpd  %xmm2, %xmm2, %xmm2
+.LBB22_3:                               # =>This Inner Loop Header: Depth=1
+        vmovupd (%rdi,%rax,8), %ymm3
+        vmulpd  %ymm1, %ymm3, %ymm4
+        vroundpd        $9, %ymm4, %ymm4
+        vfnmadd213pd    %ymm3, %ymm0, %ymm4     # ymm4 = -(ymm0 * ymm4) + ymm3
+        vcmplepd        %ymm4, %ymm0, %ymm3
+        vcmpltpd        %ymm2, %ymm4, %ymm5
+        vandpd  %ymm0, %ymm3, %ymm3
+        vsubpd  %ymm3, %ymm4, %ymm3
+        vandpd  %ymm0, %ymm5, %ymm4
+        vaddpd  %ymm4, %ymm3, %ymm3
+        vmovupd %ymm3, (%rdi,%rax,8)
+        addq    $4, %rax
+        cmpq    %rsi, %rax
+        jb      .LBB22_3
+        jmp     .LBB22_9
+.LBB22_4:
+        decq    %rsi
+        movq    %rsi, %rcx
+        shrq    $2, %rcx
+        incq    %rcx
+        movl    %ecx, %eax
+        andl    $7, %eax
+        cmpq    $28, %rsi
+        jae     .LBB22_10
+        xorl    %edx, %edx
+        jmp     .LBB22_6
+.LBB22_10:
+        andq    $-8, %rcx
+        xorl    %edx, %edx
+        vbroadcastsd    .LCPI22_1(%rip), %ymm0  # ymm0 = [NaN,NaN,NaN,NaN]
+.LBB22_11:                              # =>This Inner Loop Header: Depth=1
+        vmovupd %ymm0, (%rdi,%rdx,8)
+        vmovupd %ymm0, 32(%rdi,%rdx,8)
+        vmovupd %ymm0, 64(%rdi,%rdx,8)
+        vmovupd %ymm0, 96(%rdi,%rdx,8)
+        vmovupd %ymm0, 128(%rdi,%rdx,8)
+        vmovupd %ymm0, 160(%rdi,%rdx,8)
+        vmovupd %ymm0, 192(%rdi,%rdx,8)
+        vmovupd %ymm0, 224(%rdi,%rdx,8)
+        addq    $32, %rdx
+        addq    $-8, %rcx
+        jne     .LBB22_11
+.LBB22_6:
+        testq   %rax, %rax
+        je      .LBB22_9
+        leaq    (%rdi,%rdx,8), %rcx
+        shlq    $5, %rax
+        xorl    %edx, %edx
+        vbroadcastsd    .LCPI22_1(%rip), %ymm0  # ymm0 = [NaN,NaN,NaN,NaN]
+.LBB22_8:                               # =>This Inner Loop Header: Depth=1
+        vmovupd %ymm0, (%rcx,%rdx)
+        addq    $32, %rdx
+        cmpq    %rdx, %rax
+        jne     .LBB22_8
+.LBB22_9:
+        vzeroupper
+        retq
+.LCPI23_0:
+        .long   0x3f800000                      # float 1
+.LCPI23_1:
+        .long   0x7fc00001                      # float NaN
+ModNumber_8x_F32_V(float*, float, unsigned long):             # @ModNumber_8x_F32_V(float*, float, unsigned long)
+        andq    $-8, %rsi
+        je      .LBB23_9
+        vxorps  %xmm1, %xmm1, %xmm1
+        vucomiss        %xmm1, %xmm0
+        jbe     .LBB23_4
+        vmovss  .LCPI23_0(%rip), %xmm1          # xmm1 = mem[0],zero,zero,zero
+        vdivss  %xmm0, %xmm1, %xmm1
+        vbroadcastss    %xmm1, %ymm1
+        vbroadcastss    %xmm0, %ymm0
+        xorl    %eax, %eax
+        vxorps  %xmm2, %xmm2, %xmm2
+.LBB23_3:                               # =>This Inner Loop Header: Depth=1
+        vmovups (%rdi,%rax,4), %ymm3
+        vmulps  %ymm1, %ymm3, %ymm4
+        vroundps        $9, %ymm4, %ymm4
+        vfnmadd213ps    %ymm3, %ymm0, %ymm4     # ymm4 = -(ymm0 * ymm4) + ymm3
+        vcmpleps        %ymm4, %ymm0, %ymm3
+        vcmpltps        %ymm2, %ymm4, %ymm5
+        vandps  %ymm0, %ymm3, %ymm3
+        vsubps  %ymm3, %ymm4, %ymm3
+        vandps  %ymm0, %ymm5, %ymm4
+        vaddps  %ymm4, %ymm3, %ymm3
+        vmovups %ymm3, (%rdi,%rax,4)
+        addq    $8, %rax
+        cmpq    %rsi, %rax
+        jb      .LBB23_3
+        jmp     .LBB23_9
+.LBB23_4:
+        decq    %rsi
+        movq    %rsi, %rcx
+        shrq    $3, %rcx
+        incq    %rcx
+        movl    %ecx, %eax
+        andl    $7, %eax
+        cmpq    $56, %rsi
+        jae     .LBB23_10
+        xorl    %edx, %edx
+        jmp     .LBB23_6
+.LBB23_10:
+        andq    $-8, %rcx
+        xorl    %edx, %edx
+        vbroadcastss    .LCPI23_1(%rip), %ymm0  # ymm0 = [NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN]
+.LBB23_11:                              # =>This Inner Loop Header: Depth=1
+        vmovups %ymm0, (%rdi,%rdx,4)
+        vmovups %ymm0, 32(%rdi,%rdx,4)
+        vmovups %ymm0, 64(%rdi,%rdx,4)
+        vmovups %ymm0, 96(%rdi,%rdx,4)
+        vmovups %ymm0, 128(%rdi,%rdx,4)
+        vmovups %ymm0, 160(%rdi,%rdx,4)
+        vmovups %ymm0, 192(%rdi,%rdx,4)
+        vmovups %ymm0, 224(%rdi,%rdx,4)
+        addq    $64, %rdx
+        addq    $-8, %rcx
+        jne     .LBB23_11
+.LBB23_6:
+        testq   %rax, %rax
+        je      .LBB23_9
+        leaq    (%rdi,%rdx,4), %rcx
+        shlq    $5, %rax
+        xorl    %edx, %edx
+        vbroadcastss    .LCPI23_1(%rip), %ymm0  # ymm0 = [NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN]
+.LBB23_8:                               # =>This Inner Loop Header: Depth=1
+        vmovups %ymm0, (%rcx,%rdx)
+        addq    $32, %rdx
+        cmpq    %rdx, %rax
+        jne     .LBB23_8
+.LBB23_9:
         vzeroupper
         retq

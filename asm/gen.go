@@ -26,6 +26,8 @@ func main() {
 	genDiv_F32()
 	genDivNumber_F64()
 	genDivNumber_F32()
+	genModNumber_4x_F64()
+	genModNumber_8x_F32()
 
 	genAbs_F64()
 	genAbs_F32()

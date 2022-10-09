@@ -1,5 +1,12 @@
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
+
+#define MAX_VECTOR_SIZE 256
+#include "vectorclass.h"
+#include "vectormath_exp.h"
+
+const size_t vsize_float = 8;
+const size_t vsize_double = 4;
 
 template<typename T>
 void Add(T* __restrict x, T* __restrict y, size_t n) {
@@ -164,4 +171,26 @@ void Inv_F64_V(double* x, size_t n) {
 
 void Inv_F32_V(float* x, size_t n) {
     Inv(x, n);
+}
+
+void ModNumber_4x_F64_V(double* __restrict x, double y, size_t n) {
+    size_t nsimd = n & size_t(-vsize_double);
+
+    Vec4d vx;
+    for (size_t i = 0; i < nsimd; i += vsize_double) {
+        vx.load(x + i);
+        [[clang::always_inline]] vx = fmodulo(vx, y);
+        vx.store(x + i);
+    }
+}
+
+void ModNumber_8x_F32_V(float* __restrict x, float y, size_t n) {
+    size_t nsimd = n & size_t(-vsize_float);
+
+    Vec8f vx;
+    for (size_t i = 0; i < nsimd; i += vsize_float) {
+        vx.load(x + i);
+        [[clang::always_inline]] vx = fmodulo(vx, y);
+        vx.store(x + i);
+    }
 }

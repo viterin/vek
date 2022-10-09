@@ -43,6 +43,31 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestMod(t *testing.T) {
+	rand.Seed(2)
+	for i := 0; i < 1000; i++ {
+		size := 1 + (i / 5)
+		{
+			a := rand.Float64() * 100
+			y := Random[float64](size)
+			y1 := slices.Clone(y)
+
+			ModNumber_Go_F64(y, a)
+			ModNumber_AVX2_F64(y1, a)
+			require.InDeltaSlice(t, y, y1, 0.001)
+		}
+		{
+			a := float32(rand.Float64() * 100)
+			y := Random[float32](size)
+			y1 := slices.Clone(y)
+
+			ModNumber_Go_F32(y, a)
+			ModNumber_AVX2_F32(y1, a)
+			require.InDeltaSlice(t, y, y1, 0.001)
+		}
+	}
+}
+
 func TestAbsNegInv(t *testing.T) {
 	rand.Seed(2)
 	for i := 0; i < 1000; i++ {
@@ -167,6 +192,46 @@ func BenchmarkMul(b *testing.B) {
 				x32 := slices.Clone(x32)
 				b.StartTimer()
 				Mul_AVX2_F32(x32, y32)
+			}
+		})
+	}
+}
+
+func BenchmarkMod(b *testing.B) {
+	for _, size := range sizes[3:] {
+		x := RandomRange[float64](0, 100, size)
+		x32 := RandomRange[float32](0, 100, size)
+
+		b.Run(fmt.Sprintf("go_f64_%d", size), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				x := slices.Clone(x)
+				b.StartTimer()
+				ModNumber_Go_F64(x, 2.5)
+			}
+		})
+		b.Run(fmt.Sprintf("go_f32_%d", size), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				x32 := slices.Clone(x32)
+				b.StartTimer()
+				ModNumber_Go_F32(x32, 2.5)
+			}
+		})
+		b.Run(fmt.Sprintf("avx2_f64_%d", size), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				x := slices.Clone(x)
+				b.StartTimer()
+				ModNumber_AVX2_F64(x, 2.5)
+			}
+		})
+		b.Run(fmt.Sprintf("avx2_f32_%d", size), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				x32 := slices.Clone(x32)
+				b.StartTimer()
+				ModNumber_AVX2_F32(x32, 2.5)
 			}
 		})
 	}

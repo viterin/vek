@@ -51,6 +51,12 @@ func DivNumber_AVX2_F64(x []float64, a float64)
 func DivNumber_AVX2_F32(x []float32, a float32)
 
 //go:noescape
+func ModNumber_4x_AVX2_F64(x []float64, a float64)
+
+//go:noescape
+func ModNumber_8x_AVX2_F32(x []float32, a float32)
+
+//go:noescape
 func Abs_AVX2_F64(x []float64)
 
 //go:noescape

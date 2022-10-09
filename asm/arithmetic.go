@@ -1806,3 +1806,211 @@ func genInv_F32() {
 		RET()
 	}
 }
+
+func genModNumber_4x_F64() {
+
+	data := GLOBL("dataModNumberF64", RODATA|NOPTR)
+	DATA(0, U64(0x3ff0000000000000)) // Label("LCPI22_0")
+	DATA(8, U64(0x7ff8000020000000)) // Label("LCPI22_1")
+
+	TEXT("ModNumber_4x_AVX2_F64", NOSPLIT, "func(x []float64, a float64)")
+	Pragma("noescape")
+	Load(Param("x").Base(), RDI)
+	Load(Param("a"), X0)
+	Load(Param("x").Len(), RSI)
+
+	ANDQ(I32(-4), RSI)
+	JE(LabelRef("LBB22_9"))
+	VXORPD(X1, X1, X1)
+	VUCOMISD(X1, X0)
+	JBE(LabelRef("LBB22_4"))
+	VMOVSD(data.Offset(0), X1)
+	VDIVSD(X0, X1, X1)
+	VBROADCASTSD(X1, Y1)
+	VBROADCASTSD(X0, Y0)
+	XORL(EAX, EAX)
+	VXORPD(X2, X2, X2)
+
+	Label("LBB22_3")
+	{
+		VMOVUPD(Mem{Base: RDI}.Idx(RAX, 8), Y3)
+		VMULPD(Y1, Y3, Y4)
+		VROUNDPD(Imm(9), Y4, Y4)
+		VFNMADD213PD(Y3, Y0, Y4)
+		VCMPPD(Imm(2), Y4, Y0, Y3)
+		VCMPPD(Imm(1), Y2, Y4, Y5)
+		VANDPD(Y0, Y3, Y3)
+		VSUBPD(Y3, Y4, Y3)
+		VANDPD(Y0, Y5, Y4)
+		VADDPD(Y4, Y3, Y3)
+		VMOVUPD(Y3, Mem{Base: RDI}.Idx(RAX, 8))
+		ADDQ(Imm(4), RAX)
+		CMPQ(RAX, RSI)
+		JB(LabelRef("LBB22_3"))
+		JMP(LabelRef("LBB22_9"))
+	}
+
+	Label("LBB22_4")
+	{
+		DECQ(RSI)
+		MOVQ(RSI, RCX)
+		SHRQ(Imm(2), RCX)
+		INCQ(RCX)
+		MOVL(ECX, EAX)
+		ANDL(Imm(7), EAX)
+		CMPQ(RSI, Imm(28))
+		JAE(LabelRef("LBB22_10"))
+		XORL(EDX, EDX)
+		JMP(LabelRef("LBB22_6"))
+	}
+
+	Label("LBB22_10")
+	{
+		ANDQ(I32(-8), RCX)
+		XORL(EDX, EDX)
+		VBROADCASTSD(data.Offset(8), Y0)
+	}
+
+	Label("LBB22_11")
+	{
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(32))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(64))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(96))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(128))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(160))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(192))
+		VMOVUPD(Y0, Mem{Base: RDI}.Idx(RDX, 8).Offset(224))
+		ADDQ(Imm(32), RDX)
+		ADDQ(I32(-8), RCX)
+		JNE(LabelRef("LBB22_11"))
+	}
+
+	Label("LBB22_6")
+	{
+		TESTQ(RAX, RAX)
+		JE(LabelRef("LBB22_9"))
+		LEAQ(Mem{Base: RDI}.Idx(RDX, 8), RCX)
+		SHLQ(Imm(5), RAX)
+		XORL(EDX, EDX)
+		VBROADCASTSD(data.Offset(8), Y0)
+	}
+
+	Label("LBB22_8")
+	{
+		VMOVUPD(Y0, Mem{Base: RCX}.Idx(RDX, 1))
+		ADDQ(Imm(32), RDX)
+		CMPQ(RAX, RDX)
+		JNE(LabelRef("LBB22_8"))
+	}
+
+	Label("LBB22_9")
+	{
+		VZEROUPPER()
+		RET()
+	}
+}
+
+func genModNumber_8x_F32() {
+
+	data := GLOBL("dataModNumberF32", RODATA|NOPTR)
+	DATA(0, U32(0x3f800000)) // Label("LCPI23_0")
+	DATA(4, U32(0x7fc00001)) // Label("LCPI23_1")
+
+	TEXT("ModNumber_8x_AVX2_F32", NOSPLIT, "func(x []float32, a float32)")
+	Pragma("noescape")
+	Load(Param("x").Base(), RDI)
+	Load(Param("a"), X0)
+	Load(Param("x").Len(), RSI)
+
+	ANDQ(I32(-8), RSI)
+	JE(LabelRef("LBB23_9"))
+	VXORPS(X1, X1, X1)
+	VUCOMISS(X1, X0)
+	JBE(LabelRef("LBB23_4"))
+	VMOVSS(data.Offset(0), X1)
+	VDIVSS(X0, X1, X1)
+	VBROADCASTSS(X1, Y1)
+	VBROADCASTSS(X0, Y0)
+	XORL(EAX, EAX)
+	VXORPS(X2, X2, X2)
+
+	Label("LBB23_3")
+	{
+		VMOVUPS(Mem{Base: RDI}.Idx(RAX, 4), Y3)
+		VMULPS(Y1, Y3, Y4)
+		VROUNDPS(Imm(9), Y4, Y4)
+		VFNMADD213PS(Y3, Y0, Y4)
+		VCMPPS(Imm(2), Y4, Y0, Y3)
+		VCMPPS(Imm(1), Y2, Y4, Y5)
+		VANDPS(Y0, Y3, Y3)
+		VSUBPS(Y3, Y4, Y3)
+		VANDPS(Y0, Y5, Y4)
+		VADDPS(Y4, Y3, Y3)
+		VMOVUPS(Y3, Mem{Base: RDI}.Idx(RAX, 4))
+		ADDQ(Imm(8), RAX)
+		CMPQ(RAX, RSI)
+		JB(LabelRef("LBB23_3"))
+		JMP(LabelRef("LBB23_9"))
+	}
+
+	Label("LBB23_4")
+	{
+		DECQ(RSI)
+		MOVQ(RSI, RCX)
+		SHRQ(Imm(3), RCX)
+		INCQ(RCX)
+		MOVL(ECX, EAX)
+		ANDL(Imm(7), EAX)
+		CMPQ(RSI, Imm(56))
+		JAE(LabelRef("LBB23_10"))
+		XORL(EDX, EDX)
+		JMP(LabelRef("LBB23_6"))
+	}
+
+	Label("LBB23_10")
+	{
+		ANDQ(I32(-8), RCX)
+		XORL(EDX, EDX)
+		VBROADCASTSS(data.Offset(4), Y0)
+	}
+
+	Label("LBB23_11")
+	{
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(32))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(64))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(96))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(128))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(160))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(192))
+		VMOVUPS(Y0, Mem{Base: RDI}.Idx(RDX, 4).Offset(224))
+		ADDQ(Imm(64), RDX)
+		ADDQ(I32(-8), RCX)
+		JNE(LabelRef("LBB23_11"))
+	}
+
+	Label("LBB23_6")
+	{
+		TESTQ(RAX, RAX)
+		JE(LabelRef("LBB23_9"))
+		LEAQ(Mem{Base: RDI}.Idx(RDX, 4), RCX)
+		SHLQ(Imm(5), RAX)
+		XORL(EDX, EDX)
+		VBROADCASTSS(data.Offset(4), Y0)
+	}
+
+	Label("LBB23_8")
+	{
+		VMOVUPS(Y0, Mem{Base: RCX}.Idx(RDX, 1))
+		ADDQ(Imm(32), RDX)
+		CMPQ(RAX, RDX)
+		JNE(LabelRef("LBB23_8"))
+	}
+
+	Label("LBB23_9")
+	{
+		VZEROUPPER()
+		RET()
+	}
+}

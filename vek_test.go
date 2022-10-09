@@ -44,7 +44,6 @@ func TestArithmetic(t *testing.T) {
 
 		require.Empty(t, AddNumber(nil, 2))
 		require.Empty(t, AddNumber(empty, 2))
-		require.Empty(t, AddNumber(empty, 2))
 		require.Equal(t, []float64{3}, AddNumber(one, 2))
 		require.Equal(t, []float64{3, 4, 5, 6}, AddNumber(four, 2))
 		require.Equal(t, []float64{3, 4, 5, 6, 7}, AddNumber(five, 2))
@@ -64,7 +63,6 @@ func TestArithmetic(t *testing.T) {
 		require.Panics(t, func() { Sub_Into(dst, five, five) })
 
 		require.Empty(t, SubNumber(nil, 2))
-		require.Empty(t, SubNumber(empty, 2))
 		require.Empty(t, SubNumber(empty, 2))
 		require.Equal(t, []float64{-1}, SubNumber(one, 2))
 		require.Equal(t, []float64{-1, 0, 1, 2}, SubNumber(four, 2))
@@ -86,7 +84,6 @@ func TestArithmetic(t *testing.T) {
 
 		require.Empty(t, MulNumber(nil, 2))
 		require.Empty(t, MulNumber(empty, 2))
-		require.Empty(t, MulNumber(empty, 2))
 		require.Equal(t, []float64{2}, MulNumber(one, 2))
 		require.Equal(t, []float64{2, 4, 6, 8}, MulNumber(four, 2))
 		require.Equal(t, []float64{2, 4, 6, 8, 10}, MulNumber(five, 2))
@@ -107,13 +104,32 @@ func TestArithmetic(t *testing.T) {
 
 		require.Empty(t, DivNumber(nil, 2))
 		require.Empty(t, DivNumber(empty, 2))
-		require.Empty(t, DivNumber(empty, 2))
 		require.InDeltaSlice(t, []float64{1. / 2}, DivNumber(one, 2), d)
 		require.InDeltaSlice(t, []float64{1. / 2, 2. / 2, 3. / 2, 4. / 2}, DivNumber(four, 2), d)
 		require.InDeltaSlice(t, []float64{1. / 2, 2. / 2, 3. / 2, 4. / 2, 5. / 2}, DivNumber(five, 2), d)
 		dst = DivNumber_Into(dst, three, 2)
 		require.InDeltaSlice(t, []float64{1. / 2, 2. / 2, 3. / 2}, dst, d)
 		require.Panics(t, func() { DivNumber_Into(dst, five, 2) })
+
+		require.Panics(t, func() { Mod(one, two) })
+		require.Empty(t, Mod(empty, nil))
+		require.InDeltaSlice(t, []float64{0}, Mod(one, one), d)
+		require.InDeltaSlice(t, []float64{1, 2, 0.5, 1.5}, Mod(four, Repeat(2.5, 4)), d)
+		require.InDeltaSlice(t, []float64{1.5, 0.5, 2, 1}, Mod(negFour, Repeat(2.5, 4)), d)
+		require.InDeltaSlice(t, []float64{1, 2, 0.5, 1.5, 0}, Mod(five, Repeat(2.5, 5)), d)
+		dst = Mod_Into(dst, three, Repeat(2.5, 3))
+		require.Equal(t, []float64{1, 2, 0.5}, dst)
+		require.Panics(t, func() { Mod_Into(dst, five, five) })
+
+		require.Empty(t, ModNumber(nil, 2))
+		require.Empty(t, ModNumber(empty, 2))
+		require.InDeltaSlice(t, []float64{1}, ModNumber(one, 2.5), d)
+		require.InDeltaSlice(t, []float64{1, 2, 0.5, 1.5}, ModNumber(four, 2.5), d)
+		require.InDeltaSlice(t, []float64{1.5, 0.5, 2, 1}, ModNumber(negFour, 2.5), d)
+		require.InDeltaSlice(t, []float64{1, 2, 0.5, 1.5, 0}, ModNumber(five, 2.5), d)
+		dst = ModNumber_Into(dst, three, 2.5)
+		require.InDeltaSlice(t, []float64{1, 2, 0.5}, dst, d)
+		require.Panics(t, func() { ModNumber_Into(dst, five, 2) })
 
 		require.Empty(t, Abs(empty))
 		require.Empty(t, Abs(nil))

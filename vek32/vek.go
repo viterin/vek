@@ -119,6 +119,40 @@ func Div_Into(dst, x, y []float32) []float32 {
 	return dst
 }
 
+// Mod returns the element-wise, Euclidean modulus of two slices. This differs from the % operator
+// for negative numbers, for example Mod(-2, 3) == 1. No SIMD acceleration yet, use ModNumber if
+// possible.
+func Mod(x, y []float32) []float32 {
+	x = slices.Clone(x)
+	Mod_Inplace(x, y)
+	return x
+}
+
+// Mod_Inplace computes the element-wise, Euclidean modulus of two slices, inplace. This differs
+// from the % operator for negative numbers, for example Mod(-2, 3) == 1. No SIMD acceleration yet,
+// use ModNumber if possible.
+func Mod_Inplace(x, y []float32) {
+	checkEqualLength(x, y)
+	checkOverlap(x, y)
+	if functions.UseAVX2 {
+		// no vectorized version yet
+		functions.Mod_Go_F32(x, y)
+	} else {
+		functions.Mod_Go_F32(x, y)
+	}
+}
+
+// Mod_Into computes the element-wise, Euclidean modulus of two slices and stores the result in the
+// destination slice. This differs from the % operator for negative numbers, for example Mod(-2, 3) == 1.
+// No SIMD acceleration yet, use ModNumber if possible.
+func Mod_Into(dst, x, y []float32) []float32 {
+	dst = checkCapacity(dst, x)
+	checkOverlap(dst, x)
+	copy(dst, x)
+	Mod_Inplace(dst, y)
+	return dst
+}
+
 // AddNumber returns the result of adding a number to each slice element.
 func AddNumber(x []float32, a float32) []float32 {
 	x = slices.Clone(x)
@@ -220,6 +254,34 @@ func DivNumber_Into(dst, x []float32, a float32) []float32 {
 	checkOverlap(dst, x)
 	copy(dst, x)
 	DivNumber_Inplace(dst, a)
+	return dst
+}
+
+// ModNumber computes the Euclidean modulus of each element and a number. This differs from the
+// % operator for negative numbers, for example Mod(-2, 3) == 1.
+func ModNumber(x []float32, y float32) []float32 {
+	x = slices.Clone(x)
+	ModNumber_Inplace(x, y)
+	return x
+}
+
+// ModNumber_Inplace computes the Euclidean modulus of each element and a number, inplace. This
+// differs from the % operator for negative numbers, for example Mod(-2, 3) == 1.
+func ModNumber_Inplace(x []float32, y float32) {
+	if functions.UseAVX2 {
+		functions.ModNumber_AVX2_F32(x, y)
+	} else {
+		functions.ModNumber_Go_F32(x, y)
+	}
+}
+
+// ModNumber_Into computes the Euclidean modulus of each element and a number and stores the result in
+// the destination slice. This differs from the % operator for negative numbers, for example Mod(-2, 3) == 1.
+func ModNumber_Into(dst, x []float32, y float32) []float32 {
+	dst = checkCapacity(dst, x)
+	checkOverlap(dst, x)
+	copy(dst, x)
+	ModNumber_Inplace(dst, y)
 	return dst
 }
 
