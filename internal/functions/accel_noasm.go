@@ -550,3 +550,12 @@ func ToInt32_AVX2_F32(x []int32, y []float32) {
 func ToInt64_AVX2_F32(x []int64, y []float32) {
 	panic("not implemented")
 }
+
+// extras
+func Pow_AVX2_F32(x, y []float32) {
+	panic("not implemented")
+}
+
+func Pow_AVX2_F64(x, y []float64) {
+	panic("not implemented")
+}
