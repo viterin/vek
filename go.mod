@@ -1,13 +1,13 @@
 module github.com/viterin/vek
 
-go 1.18
+go 1.19
 
 require (
 	github.com/chewxy/math32 v1.10.1
 	github.com/stretchr/testify v1.8.0
-	github.com/viterin/partial v1.0.0
-	golang.org/x/exp v0.0.0-20220907003533-145caa8ea1d0
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
+	github.com/viterin/partial v1.1.0
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
+	golang.org/x/sys v0.11.0
 )
 
 require (
