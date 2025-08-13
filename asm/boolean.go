@@ -687,6 +687,7 @@ func genAny() {
 
 	Label("LBB1_9")
 	{
+		XORQ(RAX, RAX)
 		TESTB(CL, CL)
 		SETNE(AL)
 		VZEROUPPER()
