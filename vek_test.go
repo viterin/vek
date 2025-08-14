@@ -582,6 +582,7 @@ func TestBool(t *testing.T) {
 		require.Equal(t, false, Any(ToBool(Zeros(32))))
 		require.Equal(t, true, Any(thirtyThreeBool))
 		require.Equal(t, false, Any(ToBool(Zeros(33))))
+		require.Equal(t, false, Any(ToBool(Zeros(257))))
 
 		require.Equal(t, true, None(emptyBool))
 		require.Equal(t, false, None(oneBool))
